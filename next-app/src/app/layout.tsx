@@ -76,6 +76,14 @@ export default function RootLayout({
                     <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-400 group-hover:w-full transition-all duration-300"></span>
                   </Link>
                   <SignedIn>
+                    <Link
+                      href="/profile"
+                      className="text-gray-300 hover:text-emerald-400 font-medium transition-colors duration-300 relative group"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      マイページ
+                      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-400 group-hover:w-full transition-all duration-300"></span>
+                    </Link>
                     <UserButton afterSignOutUrl="/" /> {/* afterSignOutUrlを追加 */}
                   </SignedIn>
                   <SignedOut>
