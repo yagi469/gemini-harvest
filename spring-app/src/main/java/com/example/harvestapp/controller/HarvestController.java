@@ -52,7 +52,7 @@ public class HarvestController {
         harvest.setLocation(harvestDetails.getLocation());
         harvest.setPrice(harvestDetails.getPrice());
         harvest.setImageData(harvestDetails.getImageData());
-        harvest.setAvailableDates(harvestDetails.getAvailableDates());
+        harvest.setAvailableSlots(harvestDetails.getAvailableSlots());
 
         Harvest updatedHarvest = harvestRepository.save(harvest);
         return ResponseEntity.ok(updatedHarvest);

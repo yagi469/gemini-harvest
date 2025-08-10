@@ -111,6 +111,7 @@ body {
   background-color: #059669; /* emerald-600 */
   color: white;
   font-weight: bold;
+  border: 1px solid #047857; /* emerald-700 */
   border-radius: 0.5rem;
 }
 

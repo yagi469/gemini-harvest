@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.Map;
 
 @Entity
 public class Harvest {
@@ -21,18 +21,18 @@ public class Harvest {
     private String imageData;
 
     @ElementCollection
-    private Set<LocalDate> availableDates;
+    private Map<LocalDate, Integer> availableSlots;
 
     public Harvest() {
     }
 
-    public Harvest(String name, String description, String location, double price, String imageData, Set<LocalDate> availableDates) {
+    public Harvest(String name, String description, String location, double price, String imageData, Map<LocalDate, Integer> availableSlots) {
         this.name = name;
         this.description = description;
         this.location = location;
         this.price = price;
         this.imageData = imageData;
-        this.availableDates = availableDates;
+        this.availableSlots = availableSlots;
     }
 
     // Getters and Setters
@@ -84,11 +84,11 @@ public class Harvest {
         this.imageData = imageData;
     }
 
-    public Set<LocalDate> getAvailableDates() {
-        return availableDates;
+    public Map<LocalDate, Integer> getAvailableSlots() {
+        return availableSlots;
     }
 
-    public void setAvailableDates(Set<LocalDate> availableDates) {
-        this.availableDates = availableDates;
+    public void setAvailableSlots(Map<LocalDate, Integer> availableSlots) {
+        this.availableSlots = availableSlots;
     }
 }

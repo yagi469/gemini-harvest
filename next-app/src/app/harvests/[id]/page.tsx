@@ -13,7 +13,7 @@ interface Harvest {
   location: string;
   price: number;
   imageData: string;
-  availableDates: string[];
+  availableSlots: { [key: string]: number };
 }
 
 interface PageProps {
@@ -85,6 +85,18 @@ export default function HarvestDetailPage({ params }: PageProps) {
 
     if (!harvest) {
       setReservationMessage('収穫体験情報がありません。');
+      return;
+    }
+
+    // Validate selected date has available slots
+    if (!reservationDate || !harvest.availableSlots || harvest.availableSlots[reservationDate] === undefined || harvest.availableSlots[reservationDate] <= 0) {
+      setReservationMessage('選択された日付は予約できません。別の利用可能な日付を選択してください。');
+      return;
+    }
+
+    // Validate number of participants against available slots
+    if (numberOfParticipants > harvest.availableSlots[reservationDate]) {
+      setReservationMessage(`選択された人数 (${numberOfParticipants}名) は、この日の残り予約枠 (${harvest.availableSlots[reservationDate]}名) を超えています。`);
       return;
     }
 
@@ -301,11 +313,13 @@ export default function HarvestDetailPage({ params }: PageProps) {
                 >
                   予約日
                 </label>
+                <p className="text-gray-400 text-sm mb-2">
+                  カレンダーから予約可能な日付を選択してください。
+                </p>
                 <div className="bg-gray-700/50 border border-gray-600/50 rounded-xl p-4">
                   <Calendar
                     onChange={(date) => {
                       if (Array.isArray(date)) {
-                        // Handle range selection if needed, though for this case, single date is expected
                         setReservationDate(date[0]?.toISOString().split('T')[0] || '');
                       } else {
                         setReservationDate(date?.toISOString().split('T')[0] || '');
@@ -314,18 +328,31 @@ export default function HarvestDetailPage({ params }: PageProps) {
                     value={reservationDate ? new Date(reservationDate) : null}
                     locale="ja-JP"
                     className="react-calendar-custom"
-                    tileClassName={({ date, view }) => {
+                                        tileClassName={({ date, view }) => {
                       if (view === 'month') {
                         const dateString = date.toISOString().split('T')[0];
-                        if (harvest?.availableDates?.includes(dateString)) {
+                        if (harvest?.availableSlots && harvest.availableSlots[dateString] > 0) {
                           return 'available-date';
                         }
                       }
                       return null;
                     }}
                     minDate={new Date()} // Prevent selecting past dates
+                    tileDisabled={({ date, view }) =>
+                      view === 'month' && // Disable dates in the month view
+                      (!harvest?.availableSlots || harvest.availableSlots[date.toISOString().split('T')[0]] <= 0)
+                    }
                   />
                 </div>
+                {reservationDate && (
+                  <p className="text-emerald-400 text-sm mt-2">
+                    選択中の予約日: {new Date(reservationDate).toLocaleDateString('ja-JP')}
+                    {harvest?.availableSlots && harvest.availableSlots[reservationDate] !== undefined && (
+                      <span className="ml-2"> (残り枠: {harvest.availableSlots[reservationDate]}名)</span>
+                    )}
+                  </p>
+                )}
+              </div>
               </div>
 
               <div>
