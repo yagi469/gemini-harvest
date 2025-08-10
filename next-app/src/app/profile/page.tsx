@@ -17,12 +17,14 @@ export default function ProfilePage() {
   const { user, isLoaded, isSignedIn } = useUser();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [confirmedCount, setConfirmedCount] = useState<number>(0);
+  const [pendingCount, setPendingCount] = useState<number>(0);
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
       redirect('/');
     }
-    
+
     if (isLoaded && isSignedIn && user) {
       setProfile({
         id: user.id,
@@ -31,7 +33,26 @@ export default function ProfilePage() {
         lastName: user.lastName || '',
         imageUrl: user.imageUrl,
       });
-      setLoading(false);
+
+      const fetchReservationCounts = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:8081/api/reservations/counts?userId=${user.id}`
+          );
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          setConfirmedCount(data.confirmed);
+          setPendingCount(data.pending);
+        } catch (error) {
+          console.error('Failed to fetch reservation counts:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchReservationCounts();
     }
   }, [isLoaded, isSignedIn, user]);
 
@@ -127,10 +148,20 @@ export default function ProfilePage() {
         {/* 追加情報セクション */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-6">
-            <h3 className="text-xl font-bold text-emerald-400 mb-4">予約状況</h3>
-            <div className="text-center py-8">
-              <div className="text-4xl font-bold text-emerald-400 mb-2">0</div>
-              <p className="text-gray-300">現在の予約</p>
+            <h3 className="text-xl font-bold text-emerald-400 mb-4">
+              予約状況
+            </h3>
+            <div className="text-center py-4">
+              <div className="text-3xl font-bold text-emerald-400 mb-2">
+                {confirmedCount}
+              </div>
+              <p className="text-gray-300">確定済みの体験数</p>
+            </div>
+            <div className="text-center py-4">
+              <div className="text-3xl font-bold text-emerald-400 mb-2">
+                {pendingCount}
+              </div>
+              <p className="text-gray-300">確認中の体験数</p>
             </div>
             <a
               href="/reservations"
@@ -141,7 +172,9 @@ export default function ProfilePage() {
           </div>
 
           <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 p-6">
-            <h3 className="text-xl font-bold text-emerald-400 mb-4">お気に入り</h3>
+            <h3 className="text-xl font-bold text-emerald-400 mb-4">
+              お気に入り
+            </h3>
             <div className="text-center py-8">
               <div className="text-4xl font-bold text-emerald-400 mb-2">0</div>
               <p className="text-gray-300">お気に入り体験</p>
