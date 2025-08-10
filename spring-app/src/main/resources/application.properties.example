@@ -7,6 +7,7 @@ spring.datasource.password=[YOUR_SUPABASE_PASSWORD]
 spring.datasource.driver-class-name=org.postgresql.Driver
 spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.hibernate.ddl-auto=update
+# Use 'update' to avoid dropping tables on every restart
 
 # CORS設定
 spring.web.cors.allowed-origins=https://gemini-harvest.vercel.app,http://localhost:3000
