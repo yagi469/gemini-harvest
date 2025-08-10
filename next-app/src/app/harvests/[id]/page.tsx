@@ -1,7 +1,4 @@
-'use client';
-
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 interface Harvest {
@@ -12,24 +9,11 @@ interface Harvest {
   price: number;
 }
 
-interface PageProps {
-  params: Promise<{ id: string }>;
-}
-
-export default function HarvestDetailPage({ params }: PageProps) {
+export default function HarvestDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const [harvest, setHarvest] = useState<Harvest | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [id, setId] = useState<string>('');
-
-  useEffect(() => {
-    // paramsがPromiseなので、非同期で解決する必要があります
-    const resolveParams = async () => {
-      const resolvedParams = await params;
-      setId(resolvedParams.id);
-    };
-    resolveParams();
-  }, [params]);
 
   useEffect(() => {
     if (id) {
@@ -78,20 +62,20 @@ export default function HarvestDetailPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-4xl font-bold text-center text-green-700 mb-10">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-8">
+      <h1 className="text-5xl font-extrabold text-center text-green-800 mb-12 drop-shadow-md">
         {harvest.name}
       </h1>
-      <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
-        <p className="text-gray-700 mb-4">{harvest.description}</p>
-        <p className="text-gray-600 text-lg mb-2">場所: {harvest.location}</p>
-        <p className="text-green-800 font-bold text-2xl">
+      <div className="bg-white rounded-xl shadow-xl p-7 max-w-2xl mx-auto border border-gray-100">
+        <p className="text-gray-700 mb-4 leading-relaxed">{harvest.description}</p>
+        <p className="text-gray-600 text-lg mb-2">場所: <span className="font-semibold">{harvest.location}</span></p>
+        <p className="text-green-800 font-extrabold text-2xl">
           価格: {harvest.price}円
         </p>
       </div>
-      <div className="text-center mt-8">
-        <Link href="/" className="text-blue-500 hover:underline">
-          Back to Home
+      <div className="text-center mt-10">
+        <Link href="/" className="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-md">
+          ホームに戻る
         </Link>
       </div>
     </div>

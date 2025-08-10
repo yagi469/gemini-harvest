@@ -44,15 +44,15 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-4xl font-bold text-center text-green-700 mb-10">農業収穫体験アプリ</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-8">
+      <h1 className="text-5xl font-extrabold text-center text-green-800 mb-12 drop-shadow-md">農業収穫体験アプリ</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
         {harvests.map((harvest) => (
-          <a key={harvest.id} href={`/harvests/${harvest.id}`} className="bg-white rounded-lg shadow-md p-6 block hover:shadow-lg transition-shadow duration-300">
-            <h2 className="text-2xl font-semibold text-green-600 mb-2">{harvest.name}</h2>
-            <p className="text-gray-700 mb-2">{harvest.description}</p>
-            <p className="text-gray-600 text-sm mb-1">場所: {harvest.location}</p>
-            <p className="text-green-800 font-bold">価格: {harvest.price}円</p>
+          <a key={harvest.id} href={`/harvests/${harvest.id}`} className="bg-white rounded-xl shadow-xl p-7 block hover:shadow-2xl hover:scale-102 transition-all duration-300 border border-gray-100 transform">
+            <h2 className="text-2xl font-bold text-green-700 mb-3">{harvest.name}</h2>
+            <p className="text-gray-700 mb-3 leading-relaxed line-clamp-3">{harvest.description}</p>
+            <p className="text-gray-600 text-md mb-2">場所: <span className="font-semibold">{harvest.location}</span></p>
+            <p className="text-green-800 font-extrabold text-xl">価格: {harvest.price}円</p>
           </a>
         ))}
       </div>
