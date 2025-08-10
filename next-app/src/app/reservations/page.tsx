@@ -26,6 +26,8 @@ export default function ReservationsPage() {
   const { isLoaded, isSignedIn, user } = useUser();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [confirmedCount, setConfirmedCount] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
@@ -47,7 +49,7 @@ export default function ReservationsPage() {
               const harvestResponse = await fetch(`${apiUrl}/api/harvests/${res.harvestId}`);
               if (!harvestResponse.ok) {
                 console.error(`Failed to fetch harvest details for ID: ${res.harvestId}`);
-                return res; // Return reservation without harvest details if fetch fails
+                return res; 
               }
               const harvestData = await harvestResponse.json();
               return {
@@ -60,9 +62,18 @@ export default function ReservationsPage() {
             })
           );
           setReservations(reservationsWithHarvestDetails);
+
+          // Calculate counts
+          const confirmed = reservationsWithHarvestDetails.filter(res => res.status === 'Confirmed').length;
+          const pending = reservationsWithHarvestDetails.filter(res => res.status === 'Pending').length;
+          setConfirmedCount(confirmed);
+          setPendingCount(pending);
+
         } catch (e) {
           console.error("Failed to fetch reservations:", e);
           setReservations([]);
+          setConfirmedCount(0);
+          setPendingCount(0);
         } finally {
           setLoading(false);
         }
@@ -213,6 +224,20 @@ export default function ReservationsPage() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Fixed counts display at bottom-left */}
+      <div className="fixed bottom-8 left-8 bg-gray-800/70 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-gray-700/50">
+        <div className="flex flex-col space-y-2 text-lg">
+          <div className="flex items-center text-emerald-300">
+            <span className="text-2xl mr-2">✅</span>
+            確定済み: <span className="font-bold ml-1">{confirmedCount}</span>
+          </div>
+          <div className="flex items-center text-yellow-300">
+            <span className="text-2xl mr-2">⏳</span>
+            確認中: <span className="font-bold ml-1">{pendingCount}</span>
+          </div>
+        </div>
       </div>
     </div>
   );
