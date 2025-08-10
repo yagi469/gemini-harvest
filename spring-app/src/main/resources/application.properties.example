@@ -1,0 +1,16 @@
+server.port=8081
+
+# Supabase PostgreSQL Database Configuration
+spring.datasource.url=jdbc:postgresql://[YOUR_SUPABASE_HOST]:5432/[YOUR_SUPABASE_DATABASE_NAME]
+spring.datasource.username=[YOUR_SUPABASE_USER]
+spring.datasource.password=[YOUR_SUPABASE_PASSWORD]
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update
+
+# CORS設定
+spring.web.cors.allowed-origins=https://gemini-harvest.vercel.app,http://localhost:3000
+spring.web.cors.allowed-methods=GET,POST,PUT,DELETE,OPTIONS,HEAD,PATCH
+spring.web.cors.allowed-headers=*
+spring.web.cors.allow-credentials=true
+spring.web.cors.max-age=3600
