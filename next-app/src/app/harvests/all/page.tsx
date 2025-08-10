@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface Harvest {
   id: number;
@@ -83,7 +84,7 @@ export default function AllHarvestsPage() {
                 <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-gray-700/50 hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 hover:scale-105 transition-all duration-500 transform">
                   {/* Image Container with Overlay */}
                   <div className="relative h-64 overflow-hidden">
-                    <img
+                    <Image
                       src={
                         harvest.imageData.startsWith('http')
                           ? harvest.imageData
@@ -94,7 +95,9 @@ export default function AllHarvestsPage() {
                           : `data:image/jpeg;base64,${harvest.imageData}`
                       }
                       alt={harvest.name}
+                      fill
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      unoptimized
                     />
                     {/* Gradient Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>

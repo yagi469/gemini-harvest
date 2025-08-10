@@ -4,6 +4,7 @@ import { useUser } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link'; // Add this import
+import Image from 'next/image';
 
 interface Reservation {
   id: number;
@@ -132,9 +133,11 @@ export default function ReservationsPage() {
                   {/* 体験画像 */}
                   <div className="flex-shrink-0">
                     <div className="w-24 h-24 rounded-lg overflow-hidden border border-gray-600">
-                      <img
+                      <Image
                         src={reservation.harvestImage}
                         alt={reservation.harvestName}
+                        width={96}
+                        height={96}
                         className="w-full h-full object-cover"
                       />
                     </div>

@@ -3,6 +3,7 @@
 import { useUser } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 interface UserProfile {
   id: string;
@@ -63,10 +64,13 @@ export default function ProfilePage() {
             {/* プロフィール画像 */}
             <div className="flex-shrink-0">
               <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-emerald-500/50">
-                <img
+                <Image
                   src={profile.imageUrl}
                   alt="プロフィール画像"
+                  width={128}
+                  height={128}
                   className="w-full h-full object-cover"
+                  unoptimized
                 />
               </div>
             </div>
