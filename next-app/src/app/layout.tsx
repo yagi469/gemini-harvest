@@ -67,10 +67,10 @@ export default function RootLayout({
                 </button>
 
                 {/* ナビゲーション (smブレークポイント以上で表示、sm未満ではハンバーガーメニューで制御) */}
-                <nav className={`sm:flex items-center space-x-4 sm:space-x-8 ${isMenuOpen ? 'flex flex-col absolute top-full left-0 w-full bg-gray-800/90 border-t border-gray-700/50 py-4 space-y-4' : 'hidden'}`}>
+                <nav className={`sm:flex items-center ${isMenuOpen ? 'flex flex-col absolute top-full left-0 w-full bg-gray-800/90 border-t border-gray-700/50 py-4 space-y-4' : 'hidden'}`}>
                   <Link
                     href="/harvests/all"
-                    className="text-gray-300 hover:text-emerald-400 font-medium transition-colors duration-300 relative group"
+                                        className="text-gray-300 hover:text-emerald-400 font-medium transition-colors duration-300 relative group"
                     onClick={() => setIsMenuOpen(false)} // メニューを閉じる
                   >
                     すべての体験
