@@ -17,7 +17,7 @@ public class CorsConfig implements WebMvcConfigurer {
         @Override
         public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                                .allowedOriginPatterns("*") // すべてのオリジンを許可
+                                .allowedOrigins("https://gemini-harvest.vercel.app", "http://localhost:3000")
                                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH")
                                 .allowedHeaders("*")
                                 .exposedHeaders("*")
@@ -29,8 +29,10 @@ public class CorsConfig implements WebMvcConfigurer {
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
 
-                // すべてのオリジンを許可（ワイルドカード）
-                configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+                // 特定のオリジンを明示的に許可
+                configuration.setAllowedOrigins(Arrays.asList(
+                                "https://gemini-harvest.vercel.app",
+                                "http://localhost:3000"));
 
                 // すべてのメソッドを許可
                 configuration.setAllowedMethods(
@@ -47,9 +49,6 @@ public class CorsConfig implements WebMvcConfigurer {
 
                 // プリフライトリクエストのキャッシュ時間
                 configuration.setMaxAge(3600L);
-
-                // より柔軟な設定
-                configuration.setAllowCredentials(true);
 
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
                 source.registerCorsConfiguration("/**", configuration);
