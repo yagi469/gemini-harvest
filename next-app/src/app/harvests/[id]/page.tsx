@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import Image from 'next/image';
 
 interface Harvest {
   id: number;
@@ -176,7 +176,7 @@ export default function HarvestDetailPage({ params }: PageProps) {
           {/* Image Section */}
           {harvest.imageData && (
             <div className="relative h-96 overflow-hidden">
-              <img
+              <Image
                 src={
                   harvest.imageData.startsWith('http')
                     ? harvest.imageData
@@ -187,7 +187,9 @@ export default function HarvestDetailPage({ params }: PageProps) {
                     : `data:image/jpeg;base64,${harvest.imageData}`
                 }
                 alt={harvest.name}
+                fill
                 className="w-full h-full object-cover"
+                unoptimized
               />
               {/* Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-transparent"></div>
