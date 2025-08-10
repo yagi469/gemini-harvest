@@ -14,13 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/harvests")
-@CrossOrigin(origins = { "https://gemini-harvest.vercel.app",
-        "http://localhost:3000" }, allowedHeaders = "*", methods = {
-                org.springframework.web.bind.annotation.RequestMethod.GET,
-                org.springframework.web.bind.annotation.RequestMethod.POST,
-                org.springframework.web.bind.annotation.RequestMethod.PUT,
-                org.springframework.web.bind.annotation.RequestMethod.DELETE,
-                org.springframework.web.bind.annotation.RequestMethod.OPTIONS })
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class HarvestController {
 
     @Autowired
