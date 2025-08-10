@@ -1,0 +1,8 @@
+<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="200" fill="#ff6b6b"/>
+  <text x="150" y="100" font-family="Arial" font-size="24" fill="white" text-anchor="middle">いちご狩り</text>
+  <circle cx="100" cy="80" r="15" fill="#ff4757"/>
+  <circle cx="130" cy="70" r="12" fill="#ff4757"/>
+  <circle cx="160" cy="90" r="18" fill="#ff4757"/>
+  <circle cx="190" cy="60" r="14" fill="#ff4757"/>
+</svg>

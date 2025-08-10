@@ -15,15 +15,17 @@ public class Harvest {
     private String description;
     private String location;
     private double price;
+    private String imageData;
 
     public Harvest() {
     }
 
-    public Harvest(String name, String description, String location, double price) {
+    public Harvest(String name, String description, String location, double price, String imageData) {
         this.name = name;
         this.description = description;
         this.location = location;
         this.price = price;
+        this.imageData = imageData;
     }
 
     // Getters and Setters
@@ -65,5 +67,13 @@ public class Harvest {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public String getImageData() {
+        return imageData;
+    }
+
+    public void setImageData(String imageData) {
+        this.imageData = imageData;
     }
 }
