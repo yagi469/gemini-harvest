@@ -17,6 +17,7 @@ export default function AllHarvestsPage() {
   const [harvests, setHarvests] = useState<Harvest[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   useEffect(() => {
     const fetchHarvests = async () => {
@@ -24,7 +25,7 @@ export default function AllHarvestsPage() {
         setLoading(true);
         setError(null);
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-        const response = await fetch(`${apiUrl}/api/harvests`);
+        const response = await fetch(`${apiUrl}/api/harvests${searchTerm ? `?searchTerm=${searchTerm}` : ''}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -38,7 +39,7 @@ export default function AllHarvestsPage() {
       }
     };
     fetchHarvests();
-  }, []);
+  }, [searchTerm]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -57,6 +58,15 @@ export default function AllHarvestsPage() {
 
       {/* Content Section */}
       <div className="max-w-7xl mx-auto px-6 pb-16">
+        <div className="mb-8">
+          <input
+            type="text"
+            placeholder="収穫体験を検索..."
+            className="w-full p-4 rounded-xl bg-gray-700/50 text-white placeholder-gray-400 border border-gray-600/50 focus:border-emerald-500/50 focus:ring focus:ring-emerald-500/20 transition-all duration-300"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
         {loading ? (
           <div className="flex justify-center items-center min-h-[400px]">
             <div className="text-center">
