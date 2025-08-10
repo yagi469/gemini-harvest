@@ -15,7 +15,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/harvests")
-@CrossOrigin(origins = { "https://gemini-harvest.vercel.app", "http://localhost:3000" }, allowedHeaders = "*")
+@CrossOrigin(origins = { "https://gemini-harvest.vercel.app", "https://gemini-harvest.onrender.com",
+        "http://localhost:3000" }, allowedHeaders = "*")
 public class HarvestController {
 
     @Autowired
@@ -24,7 +25,9 @@ public class HarvestController {
     @GetMapping
     public List<Harvest> getAllHarvests(@RequestParam(required = false) String searchTerm) {
         if (searchTerm != null && !searchTerm.isEmpty()) {
-            return harvestRepository.findByNameContainingIgnoreCaseOrLocationContainingIgnoreCaseOrDescriptionContainingIgnoreCase(searchTerm, searchTerm, searchTerm);
+            return harvestRepository
+                    .findByNameContainingIgnoreCaseOrLocationContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                            searchTerm, searchTerm, searchTerm);
         } else {
             return harvestRepository.findAll();
         }
