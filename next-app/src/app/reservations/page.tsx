@@ -3,23 +3,27 @@
 import { useUser } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Link from 'next/link'; // Add this import
+import Link from 'next/link';
 import Image from 'next/image';
 
 interface Reservation {
   id: number;
   harvestId: number;
-  harvestName: string;
-  harvestLocation: string;
-  harvestImage: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
   reservationDate: string;
-  numberOfPeople: number;
-  totalPrice: number;
-  status: 'confirmed' | 'pending' | 'cancelled';
+  reservationTime: string;
+  numberOfParticipants: number;
+  status: 'Pending' | 'Confirmed' | 'Cancelled';
+  harvestName?: string;
+  harvestLocation?: string;
+  harvestImage?: string;
+  totalPrice?: number;
 }
 
 export default function ReservationsPage() {
-  const { isLoaded, isSignedIn } = useUser(); // Removed 'user'
+  const { isLoaded, isSignedIn, user } = useUser();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,54 +32,60 @@ export default function ReservationsPage() {
       redirect('/');
     }
     
-    if (isLoaded && isSignedIn) {
-      // 実際のAPIから予約データを取得する処理
-      // 現在はダミーデータを使用
-      setTimeout(() => {
-        setReservations([
-          {
-            id: 1,
-            harvestId: 1,
-            harvestName: 'いちご狩り体験',
-            harvestLocation: '栃木県',
-            harvestImage: '/images/ichigo.svg',
-            reservationDate: '2024-01-15',
-            numberOfPeople: 2,
-            totalPrice: 4000,
-            status: 'confirmed'
-          },
-          {
-            id: 2,
-            harvestId: 2,
-            harvestName: 'ブルーベリー収穫',
-            harvestLocation: '群馬県',
-            harvestImage: '/images/blueberry.svg',
-            reservationDate: '2024-02-20',
-            numberOfPeople: 3,
-            totalPrice: 6000,
-            status: 'pending'
+    if (isLoaded && isSignedIn && user) {
+      const fetchReservations = async () => {
+        try {
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+          const response = await fetch(`${apiUrl}/api/reservations?userId=${user.id}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
-        ]);
-        setLoading(false);
-      }, 1000);
+          const data: Reservation[] = await response.json();
+
+          const reservationsWithHarvestDetails = await Promise.all(
+            data.map(async (res) => {
+              const harvestResponse = await fetch(`${apiUrl}/api/harvests/${res.harvestId}`);
+              if (!harvestResponse.ok) {
+                console.error(`Failed to fetch harvest details for ID: ${res.harvestId}`);
+                return res; // Return reservation without harvest details if fetch fails
+              }
+              const harvestData = await harvestResponse.json();
+              return {
+                ...res,
+                harvestName: harvestData.name,
+                harvestLocation: harvestData.location,
+                harvestImage: harvestData.imageData.startsWith('/') ? harvestData.imageData : `data:image/jpeg;base64,${harvestData.imageData}`,
+                totalPrice: harvestData.price * res.numberOfParticipants,
+              };
+            })
+          );
+          setReservations(reservationsWithHarvestDetails);
+        } catch (e) {
+          console.error("Failed to fetch reservations:", e);
+          setReservations([]);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchReservations();
     }
-  }, [isLoaded, isSignedIn]);
+  }, [isLoaded, isSignedIn, user]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'confirmed':
+      case 'Confirmed':
         return (
           <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-sm font-medium rounded-full border border-emerald-500/30">
             確定済み
           </span>
         );
-      case 'pending':
+      case 'Pending':
         return (
           <span className="px-3 py-1 bg-yellow-500/20 text-yellow-400 text-sm font-medium rounded-full border border-yellow-500/30">
             確認中
           </span>
         );
-      case 'cancelled':
+      case 'Cancelled':
         return (
           <span className="px-3 py-1 bg-red-500/20 text-red-400 text-sm font-medium rounded-full border border-red-500/30">
             キャンセル
@@ -134,8 +144,8 @@ export default function ReservationsPage() {
                   <div className="flex-shrink-0">
                     <div className="w-24 h-24 rounded-lg overflow-hidden border border-gray-600">
                       <Image
-                        src={reservation.harvestImage}
-                        alt={reservation.harvestName}
+                        src={reservation.harvestImage || '/images/placeholder.svg'}
+                        alt={reservation.harvestName || 'Harvest Image'}
                         width={96}
                         height={96}
                         className="w-full h-full object-cover"
@@ -164,13 +174,13 @@ export default function ReservationsPage() {
                           <div>
                             <span className="text-gray-400">人数:</span>
                             <p className="text-white font-medium">
-                              {reservation.numberOfPeople}名
+                              {reservation.numberOfParticipants}名
                             </p>
                           </div>
                           <div>
                             <span className="text-gray-400">料金:</span>
                             <p className="text-white font-medium">
-                              ¥{reservation.totalPrice.toLocaleString()}
+                              ¥{reservation.totalPrice?.toLocaleString()}
                             </p>
                           </div>
                           <div>
@@ -191,7 +201,7 @@ export default function ReservationsPage() {
                       >
                         詳細を見る
                       </a>
-                      {reservation.status === 'pending' && (
+                      {reservation.status === 'Pending' && (
                         <button className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors duration-300 border border-red-500/30">
                           キャンセル
                         </button>

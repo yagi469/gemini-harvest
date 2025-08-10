@@ -3,6 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import ReservationModal from '../../components/ReservationModal';
+import { useUser } from '@clerk/nextjs';
 
 interface Harvest {
   id: number;
@@ -11,6 +15,7 @@ interface Harvest {
   location: string;
   price: number;
   imageData: string;
+  availableSlots: { [key: string]: number };
 }
 
 interface PageProps {
@@ -19,22 +24,13 @@ interface PageProps {
 
 export default function HarvestDetailPage({ params }: PageProps) {
   const router = useRouter();
+  const { isSignedIn, user } = useUser();
   const [harvest, setHarvest] = useState<Harvest | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [id, setId] = useState<string>('');
 
-  // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Reservation form states
-  const [userName, setUserName] = useState('');
-  const [userEmail, setUserEmail] = useState('');
-  const [reservationDate, setReservationDate] = useState('');
-  const [numberOfParticipants, setNumberOfParticipants] = useState(1);
-  const [reservationMessage, setReservationMessage] = useState<string | null>(
-    null
-  );
 
   useEffect(() => {
     const resolveParams = async () => {
@@ -65,65 +61,6 @@ export default function HarvestDetailPage({ params }: PageProps) {
       fetchHarvest();
     }
   }, [id]);
-
-  const openModal = () => {
-    setIsModalOpen(true);
-    setReservationMessage(null);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setReservationMessage(null);
-  };
-
-  const handleReservationSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setReservationMessage(null);
-
-    if (!harvest) {
-      setReservationMessage('収穫体験情報がありません。');
-      return;
-    }
-
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-      const response = await fetch(`${apiUrl}/api/reservations`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          harvestId: harvest.id,
-          userName,
-          userEmail,
-          reservationDate,
-          numberOfParticipants,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.message || `HTTP error! status: ${response.status}`
-        );
-      }
-
-      setReservationMessage('予約が完了しました！');
-      // Clear form
-      setUserName('');
-      setUserEmail('');
-      setReservationDate('');
-      setNumberOfParticipants(1);
-
-      // Close modal after successful reservation
-      setTimeout(() => {
-        closeModal();
-      }, 2000);
-    } catch (e) {
-      const message = e instanceof Error ? e.message : String(e);
-      setReservationMessage(`予約に失敗しました: ${message}`);
-    }
-  };
 
   if (loading) {
     return (
@@ -224,132 +161,27 @@ export default function HarvestDetailPage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* 予約ボタン */}
-            <div className="text-center">
+            {/* Reservation Button */}
+            <div className="mt-8 text-center">
               <button
-                onClick={openModal}
-                className="inline-flex items-center px-10 py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105"
+                onClick={() => setIsModalOpen(true)}
+                className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
-                <span className="mr-2">📅</span>
                 予約する
               </button>
             </div>
+
+            {/* Reservation Modal */}
+            <ReservationModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              harvest={harvest}
+              isSignedIn={isSignedIn || false}
+              user={user}
+            />
           </div>
         </div>
       </div>
-
-      {/* 予約モーダル */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800/95 backdrop-blur-md rounded-3xl shadow-2xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto border border-gray-600/50">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
-                予約フォーム
-              </h2>
-              <button
-                onClick={closeModal}
-                className="text-gray-400 hover:text-white text-3xl font-bold transition-colors duration-300 hover:scale-110"
-              >
-                ×
-              </button>
-            </div>
-
-            <form onSubmit={handleReservationSubmit} className="space-y-6">
-              <div>
-                <label
-                  htmlFor="userName"
-                  className="block text-gray-300 text-sm font-semibold mb-3"
-                >
-                  お名前
-                </label>
-                <input
-                  type="text"
-                  id="userName"
-                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  placeholder="山田太郎"
-                  required
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="userEmail"
-                  className="block text-gray-300 text-sm font-semibold mb-3"
-                >
-                  メールアドレス
-                </label>
-                <input
-                  type="email"
-                  id="userEmail"
-                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
-                  value={userEmail}
-                  onChange={(e) => setUserEmail(e.target.value)}
-                  placeholder="example@email.com"
-                  required
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="reservationDate"
-                  className="block text-gray-300 text-sm font-semibold mb-3"
-                >
-                  予約日
-                </label>
-                <input
-                  type="date"
-                  id="reservationDate"
-                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
-                  value={reservationDate}
-                  onChange={(e) => setReservationDate(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="numberOfParticipants"
-                  className="block text-gray-300 text-sm font-semibold mb-3"
-                >
-                  参加人数
-                </label>
-                <input
-                  type="number"
-                  id="numberOfParticipants"
-                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
-                  value={numberOfParticipants}
-                  onChange={(e) =>
-                    setNumberOfParticipants(parseInt(e.target.value))
-                  }
-                  min="1"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-              >
-                予約を確定する
-              </button>
-            </form>
-
-            {reservationMessage && (
-              <div
-                className={`mt-6 p-4 rounded-xl text-center ${
-                  reservationMessage.includes('失敗')
-                    ? 'bg-red-500/20 border border-red-500/30 text-red-300'
-                    : 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-300'
-                }`}
-              >
-                <p className="font-semibold">{reservationMessage}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Back Button */}
       <div className="text-center pb-16">
