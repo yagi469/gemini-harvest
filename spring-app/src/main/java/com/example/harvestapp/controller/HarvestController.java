@@ -22,7 +22,7 @@ public class HarvestController {
     @Autowired
     private HarvestRepository harvestRepository;
 
-    @GetMapping
+            @GetMapping
     public List<Harvest> getAllHarvests(@RequestParam(required = false) String searchTerm) {
         if (searchTerm != null && !searchTerm.isEmpty()) {
             return harvestRepository
