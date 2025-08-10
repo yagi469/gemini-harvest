@@ -11,15 +11,24 @@ interface Harvest {
   price: number;
 }
 
-export default function HarvestDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const { id } = params;
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default function HarvestDetailPage({ params }: PageProps) {
   const [harvest, setHarvest] = useState<Harvest | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [id, setId] = useState<string>('');
+
+  useEffect(() => {
+    // paramsがPromiseなので、非同期で解決する必要があります
+    const resolveParams = async () => {
+      const resolvedParams = await params;
+      setId(resolvedParams.id);
+    };
+    resolveParams();
+  }, [params]);
 
   useEffect(() => {
     if (id) {
