@@ -113,12 +113,12 @@ export default function ReservationsPage() {
             <p className="text-gray-400 mb-6">
               素晴らしい農業収穫体験を予約してみましょう
             </p>
-            <a
+            <Link
               href="/harvests/all"
               className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-medium rounded-lg transition-all duration-300 transform hover:scale-105"
             >
               体験を探す
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="space-y-6">
