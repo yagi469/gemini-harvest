@@ -71,8 +71,14 @@ export default function ReservationModal({ isOpen, onClose, harvest, isSignedIn,
       setNumberOfParticipants(1);
       setReservationMessage(null); // Clear any previous messages
       setShowSuccessPrompt(false); // Hide success prompt
+
+      // Pre-fill user information if signed in
+      if (isSignedIn && user) {
+        setUserName(user.fullName || '');
+        setUserEmail(user.primaryEmailAddress?.emailAddress || '');
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, isSignedIn, user]); // Add isSignedIn and user to dependency array
 
   const handleReservationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
