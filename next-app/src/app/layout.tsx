@@ -33,7 +33,11 @@ export default function RootLayout({
             <Link href="/" className="text-2xl font-bold hover:text-green-200 transition-colors duration-200">
               農業収穫体験アプリ
             </Link>
-            {/* You can add more navigation links here if needed */}
+            <nav>
+              <Link href="/harvests/all" className="ml-4 text-lg hover:text-green-200 transition-colors duration-200">
+                すべての体験
+              </Link>
+            </nav>
           </div>
         </header>
         {children}

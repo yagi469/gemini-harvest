@@ -11,10 +11,22 @@ interface Harvest {
   price: number;
 }
 
-export default function Home() {
+export default function AllHarvestsPage() {
   const [harvests, setHarvests] = useState<Harvest[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // Debounce for 500ms
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [searchTerm]);
 
   useEffect(() => {
     const fetchHarvests = async () => {
@@ -22,13 +34,15 @@ export default function Home() {
         setLoading(true);
         setError(null);
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-        const response = await fetch(`${apiUrl}/api/harvests`);
+        const url = debouncedSearchTerm
+          ? `${apiUrl}/api/harvests?searchTerm=${debouncedSearchTerm}`
+          : `${apiUrl}/api/harvests`;
+        const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data: Harvest[] = await response.json();
-        // Display only a limited number of recommended harvests on the homepage
-        setHarvests(data.slice(0, 3)); // Display first 3 as recommended
+        setHarvests(data);
       } catch (e) {
         const message = e instanceof Error ? e.message : String(e);
         setError(message);
@@ -37,13 +51,22 @@ export default function Home() {
       }
     };
     fetchHarvests();
-  }, []);
+  }, [debouncedSearchTerm]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-8">
       <h1 className="text-5xl font-extrabold text-center text-green-800 mb-12 drop-shadow-md">
-        おすすめ収穫体験
+        すべての収穫体験
       </h1>
+      <div className="max-w-md mx-auto mb-8">
+        <input
+          type="text"
+          placeholder="収穫体験を検索... (例: いちご, 静岡)"
+          className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
       {loading ? (
         <div className="flex justify-center items-center min-h-screen">
           Loading...
@@ -76,11 +99,6 @@ export default function Home() {
           ))}
         </div>
       )}
-      <div className="text-center mt-12">
-        <Link href="/harvests/all" className="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-md">
-          すべての収穫体験を見る
-        </Link>
-      </div>
     </div>
   );
 }
