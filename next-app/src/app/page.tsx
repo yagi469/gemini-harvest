@@ -28,8 +28,7 @@ export default function Home() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data: Harvest[] = await response.json();
-        // Display only a limited number of recommended harvests on the homepage
-        setHarvests(data.slice(0, 3)); // Display first 3 as recommended
+        setHarvests(data.slice(0, 3));
       } catch (e) {
         const message = e instanceof Error ? e.message : String(e);
         setError(message);
@@ -41,62 +40,114 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-8">
-      <h1 className="text-5xl font-extrabold text-center text-green-800 mb-12 drop-shadow-md">
-        おすすめ収穫体験
-      </h1>
-      {loading ? (
-        <div className="flex justify-center items-center min-h-screen">
-          Loading...
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/20 to-cyan-900/20"></div>
+        <div className="relative max-w-7xl mx-auto px-6 py-24 text-center">
+          <h1 className="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400 mb-8 leading-tight">
+            おすすめ収穫体験
+          </h1>
+          <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            全国各地の農園で、新鮮で美味しい果物や野菜を収穫する体験をお楽しみください
+          </p>
         </div>
-      ) : error ? (
-        <div className="flex justify-center items-center min-h-screen text-red-500">
-          Error: {error}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
-          {harvests.map((harvest) => (
-            <Link
-              key={harvest.id}
-              href={`/harvests/${harvest.id}`}
-              className="bg-white rounded-xl shadow-xl p-7 block hover:shadow-2xl hover:scale-102 transition-all duration-300 border border-gray-100 transform"
+      </div>
+
+      {/* Content Section */}
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        {loading ? (
+          <div className="flex justify-center items-center min-h-[400px]">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-400"></div>
+          </div>
+        ) : error ? (
+          <div className="flex justify-center items-center min-h-[400px]">
+            <div className="text-center">
+              <div className="text-red-400 text-6xl mb-4">⚠️</div>
+              <p className="text-red-400 text-xl">
+                エラーが発生しました: {error}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {harvests.map((harvest) => (
+              <Link
+                key={harvest.id}
+                href={`/harvests/${harvest.id}`}
+                className="group block"
+              >
+                <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-gray-700/50 hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 hover:scale-105 transition-all duration-500 transform">
+                  {/* Image Container with Overlay */}
+                  <div className="relative h-64 overflow-hidden">
+                    <img
+                      src={
+                        harvest.imageData.startsWith('http')
+                          ? harvest.imageData
+                          : harvest.imageData.startsWith('/')
+                          ? `${process.env.NEXT_PUBLIC_BASE_URL || ''}${
+                              harvest.imageData
+                            }`
+                          : `data:image/jpeg;base64,${harvest.imageData}`
+                      }
+                      alt={harvest.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    {/* Experience Name on Image */}
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <h3 className="text-2xl font-bold text-white mb-2 drop-shadow-lg">
+                        {harvest.name}
+                      </h3>
+                      <p className="text-emerald-300 font-medium text-sm">
+                        📍 {harvest.location}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card Content */}
+                  <div className="p-6">
+                    <p className="text-gray-300 mb-4 leading-relaxed line-clamp-3">
+                      {harvest.description}
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-2xl font-black text-emerald-400">
+                        ¥{harvest.price.toLocaleString()}
+                      </span>
+                      <span className="text-emerald-400 font-semibold group-hover:text-emerald-300 transition-colors duration-300">
+                        詳細を見る →
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* CTA Section */}
+        <div className="text-center mt-20">
+          <Link
+            href="/harvests/all"
+            className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105"
+          >
+            すべての体験を見る
+            <svg
+              className="ml-2 w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <img
-                src={
-                  harvest.imageData.startsWith('http')
-                    ? harvest.imageData
-                    : harvest.imageData.startsWith('/')
-                    ? `${process.env.NEXT_PUBLIC_BASE_URL || ''}${
-                        harvest.imageData
-                      }`
-                    : `data:image/jpeg;base64,${harvest.imageData}`
-                }
-                alt={harvest.name}
-                className="w-full h-48 object-cover rounded-lg mb-4"
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
               />
-              <h2 className="text-2xl font-bold text-green-700 mb-3">
-                {harvest.name}
-              </h2>
-              <p className="text-gray-700 mb-3 leading-relaxed line-clamp-3">
-                {harvest.description}
-              </p>
-              <p className="text-gray-600 text-md mb-2">
-                場所: <span className="font-semibold">{harvest.location}</span>
-              </p>
-              <p className="text-green-800 font-extrabold text-xl">
-                価格: {harvest.price}円
-              </p>
-            </Link>
-          ))}
+            </svg>
+          </Link>
         </div>
-      )}
-      <div className="text-center mt-12">
-        <Link
-          href="/harvests/all"
-          className="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-md"
-        >
-          すべての収穫体験を見る
-        </Link>
       </div>
     </div>
   );
