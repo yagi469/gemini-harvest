@@ -34,7 +34,7 @@ export default function RootLayout({
               <div className="flex justify-between items-center">
                 <Link 
                   href="/" 
-                  className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent hover:from-emerald-300 hover:to-cyan-300 transition-all duration-300"
+                  className="text-xl md:text-2xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent hover:from-emerald-300 hover:to-cyan-300 transition-all duration-300"
                 >
                   農業収穫体験
                 </Link>
