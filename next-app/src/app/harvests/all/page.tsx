@@ -124,7 +124,7 @@ export default function AllHarvestsPage() {
 
                   {/* Card Content */}
                   <div className="p-6 flex-grow">
-                    <p className="text-gray-300 mb-4 leading-relaxed flex-grow">
+                    <p className="text-gray-300 mb-4 leading-relaxed flex-grow min-h-14">
                       {harvest.description}
                     </p>
                     <div className="flex justify-between items-center">
