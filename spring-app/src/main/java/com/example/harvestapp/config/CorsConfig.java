@@ -17,7 +17,8 @@ public class CorsConfig implements WebMvcConfigurer {
         @Override
         public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                                .allowedOrigins("https://gemini-harvest.vercel.app", "http://localhost:3000")
+                                .allowedOrigins("https://gemini-harvest.vercel.app",
+                                                "https://gemini-harvest.onrender.com", "http://localhost:3000")
                                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH")
                                 .allowedHeaders("*")
                                 .exposedHeaders("*")
@@ -32,6 +33,7 @@ public class CorsConfig implements WebMvcConfigurer {
                 // 特定のオリジンを明示的に許可
                 configuration.setAllowedOrigins(Arrays.asList(
                                 "https://gemini-harvest.vercel.app",
+                                "https://gemini-harvest.onrender.com",
                                 "http://localhost:3000"));
 
                 // すべてのメソッドを許可
