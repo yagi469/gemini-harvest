@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation'; // Import useRouter
 import Link from 'next/link';
 
 interface Harvest {
@@ -16,6 +17,7 @@ interface PageProps {
 }
 
 export default function HarvestDetailPage({ params }: PageProps) {
+  const router = useRouter(); // Initialize useRouter
   const [harvest, setHarvest] = useState<Harvest | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -93,12 +95,12 @@ export default function HarvestDetailPage({ params }: PageProps) {
         </p>
       </div>
       <div className="text-center mt-10">
-        <Link
-          href="/"
+        <button
+          onClick={() => router.back()}
           className="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-md"
         >
-          ホームに戻る
-        </Link>
+          前のページに戻る
+        </button>
       </div>
     </div>
   );
