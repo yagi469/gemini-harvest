@@ -13,6 +13,7 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long harvestId;
+    private String userId; // New field for Clerk user ID
     private String userName;
     private String userEmail;
     private LocalDate reservationDate;
@@ -22,8 +23,9 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(Long harvestId, String userName, String userEmail, LocalDate reservationDate, int numberOfParticipants, String status) {
+    public Reservation(Long harvestId, String userId, String userName, String userEmail, LocalDate reservationDate, int numberOfParticipants, String status) {
         this.harvestId = harvestId;
+        this.userId = userId; // Initialize new field
         this.userName = userName;
         this.userEmail = userEmail;
         this.reservationDate = reservationDate;
@@ -46,6 +48,14 @@ public class Reservation {
 
     public void setHarvestId(Long harvestId) {
         this.harvestId = harvestId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getUserName() {

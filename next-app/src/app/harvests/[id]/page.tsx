@@ -24,7 +24,7 @@ interface PageProps {
 
 export default function HarvestDetailPage({ params }: PageProps) {
   const router = useRouter();
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
   const [harvest, setHarvest] = useState<Harvest | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -177,6 +177,7 @@ export default function HarvestDetailPage({ params }: PageProps) {
               onClose={() => setIsModalOpen(false)}
               harvest={harvest}
               isSignedIn={isSignedIn || false}
+              user={user}
             />
           </div>
         </div>

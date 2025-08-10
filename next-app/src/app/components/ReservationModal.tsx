@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import Image from 'next/image';
+import { UserResource } from '@clerk/types'; // Import UserResource type
 
 interface Harvest {
   id: number;
@@ -20,9 +21,10 @@ interface ReservationModalProps {
   onClose: () => void;
   harvest: Harvest | null;
   isSignedIn: boolean;
+  user: UserResource | null | undefined; // Add user prop
 }
 
-export default function ReservationModal({ isOpen, onClose, harvest, isSignedIn }: ReservationModalProps) {
+export default function ReservationModal({ isOpen, onClose, harvest, isSignedIn, user }: ReservationModalProps) {
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -102,6 +104,7 @@ export default function ReservationModal({ isOpen, onClose, harvest, isSignedIn 
         },
         body: JSON.stringify({
           harvestId: harvest.id,
+          userId: user?.id, // Include userId if available
           userName,
           userEmail,
           reservationDate: reservationDateString,
