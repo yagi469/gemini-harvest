@@ -14,7 +14,7 @@ interface Harvest {
 import Link from 'next/link';
 
 interface HarvestDetailPageProps {
-  params: { id: string };
+  params: { [key: string]: string | string[] };
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
