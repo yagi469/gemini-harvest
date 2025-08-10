@@ -32,20 +32,20 @@ export default function RootLayout({
           <header className="bg-gray-800/50 backdrop-blur-md border-b border-gray-700/50 sticky top-0 z-40">
             <div className="max-w-7xl mx-auto px-6 py-4">
               <div className="flex justify-between items-center">
-                <a 
+                <Link 
                   href="/" 
                   className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent hover:from-emerald-300 hover:to-cyan-300 transition-all duration-300"
                 >
                   農業収穫体験
-                </a>
+                </Link>
                 <nav className="flex items-center space-x-8">
-                  <a 
+                  <Link 
                     href="/harvests/all" 
                     className="text-gray-300 hover:text-emerald-400 font-medium transition-colors duration-300 relative group"
                   >
                     すべての体験
                     <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-400 group-hover:w-full transition-all duration-300"></span>
-                  </a>
+                  </Link>
                   <SignedIn>
                     <UserButton />
                   </SignedIn>
