@@ -1,5 +1,0 @@
-com\example\harvestapp\model\Harvest.class
-com\example\harvestapp\repository\HarvestRepository.class
-com\example\harvestapp\HarvestAppApplication.class
-com\example\harvestapp\config\DataInitializer.class
-com\example\harvestapp\controller\HarvestController.class
