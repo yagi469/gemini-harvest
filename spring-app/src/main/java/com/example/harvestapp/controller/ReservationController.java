@@ -59,8 +59,43 @@ public class ReservationController {
     }
 
     @GetMapping
+    public ResponseEntity<List<Reservation>> getAllReservations() { // New method to get all reservations
+        List<Reservation> reservations = reservationRepository.findAll();
+        return new ResponseEntity<>(reservations, HttpStatus.OK);
+    }
+
+    @GetMapping(params = "userId") // Specify that this mapping requires the userId parameter
     public ResponseEntity<List<Reservation>> getReservationsByUserId(@RequestParam String userId) {
         List<Reservation> reservations = reservationRepository.findByUserId(userId);
         return new ResponseEntity<>(reservations, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Reservation> updateReservationStatus(@PathVariable Long id, @RequestBody Map<String, String> statusUpdate) {
+        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+        if (optionalReservation.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found with ID: " + id);
+        }
+        Reservation reservation = optionalReservation.get();
+        String newStatus = statusUpdate.get("status");
+        if (newStatus == null || (!newStatus.equals("Confirmed") && !newStatus.equals("Cancelled"))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status provided. Must be 'Confirmed' or 'Cancelled'.");
+        }
+        reservation.setStatus(newStatus);
+        Reservation updatedReservation = reservationRepository.save(reservation);
+        return new ResponseEntity<>(updatedReservation, HttpStatus.OK);
+    }
+
+    @GetMapping("/counts")
+    public ResponseEntity<Map<String, Long>> getReservationCountsByUserId(@RequestParam String userId) {
+        List<Reservation> reservations = reservationRepository.findByUserId(userId);
+        long confirmedCount = reservations.stream()
+                .filter(reservation -> "Confirmed".equals(reservation.getStatus()))
+                .count();
+        long pendingCount = reservations.stream()
+                .filter(reservation -> "Pending".equals(reservation.getStatus()))
+                .count();
+
+        return new ResponseEntity<>(Map.of("confirmed", confirmedCount, "pending", pendingCount), HttpStatus.OK);
     }
 }
