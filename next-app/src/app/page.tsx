@@ -48,12 +48,12 @@ export default function Home() {
       <h1 className="text-4xl font-bold text-center text-green-700 mb-10">農業収穫体験アプリ</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {harvests.map((harvest) => (
-          <div key={harvest.id} className="bg-white rounded-lg shadow-md p-6">
+          <a key={harvest.id} href={`/harvests/${harvest.id}`} className="bg-white rounded-lg shadow-md p-6 block hover:shadow-lg transition-shadow duration-300">
             <h2 className="text-2xl font-semibold text-green-600 mb-2">{harvest.name}</h2>
             <p className="text-gray-700 mb-2">{harvest.description}</p>
             <p className="text-gray-600 text-sm mb-1">場所: {harvest.location}</p>
             <p className="text-green-800 font-bold">価格: {harvest.price}円</p>
-          </div>
+          </a>
         ))}
       </div>
     </div>
