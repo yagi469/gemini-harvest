@@ -1,0 +1,14 @@
+<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="200" fill="#3742fa"/>
+  <text x="150" y="100" font-family="Arial" font-size="24" fill="white" text-anchor="middle">ブルーベリー摘み</text>
+  <circle cx="80" cy="70" r="8" fill="#5f27cd"/>
+  <circle cx="100" cy="65" r="7" fill="#5f27cd"/>
+  <circle cx="120" cy="75" r="9" fill="#5f27cd"/>
+  <circle cx="140" cy="60" r="6" fill="#5f27cd"/>
+  <circle cx="160" cy="80" r="8" fill="#5f27cd"/>
+  <circle cx="180" cy="70" r="7" fill="#5f27cd"/>
+  <circle cx="200" cy="85" r="9" fill="#5f27cd"/>
+  <circle cx="130" cy="110" r="8" fill="#5f27cd"/>
+  <circle cx="150" cy="105" r="7" fill="#5f27cd"/>
+  <circle cx="170" cy="115" r="6" fill="#5f27cd"/>
+</svg>

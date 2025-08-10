@@ -1,0 +1,8 @@
+<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="200" fill="#ff6348"/>
+  <text x="150" y="100" font-family="Arial" font-size="24" fill="white" text-anchor="middle">トマト収穫体験</text>
+  <circle cx="100" cy="80" r="18" fill="#ff4757"/>
+  <circle cx="150" cy="70" r="20" fill="#ff4757"/>
+  <circle cx="200" cy="90" r="16" fill="#ff4757"/>
+  <circle cx="130" cy="120" r="19" fill="#ff4757"/>
+</svg>

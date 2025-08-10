@@ -10,6 +10,7 @@ interface Harvest {
   description: string;
   location: string;
   price: number;
+  imageData: string;
 }
 
 interface PageProps {
@@ -84,6 +85,17 @@ export default function HarvestDetailPage({ params }: PageProps) {
         {harvest.name}
       </h1>
       <div className="bg-white rounded-xl shadow-xl p-7 max-w-2xl mx-auto border border-gray-100">
+        <img
+          src={
+            harvest.imageData.startsWith('http')
+              ? harvest.imageData
+              : harvest.imageData.startsWith('/')
+              ? `${process.env.NEXT_PUBLIC_BASE_URL || ''}${harvest.imageData}`
+              : `data:image/jpeg;base64,${harvest.imageData}`
+          }
+          alt={harvest.name}
+          className="w-full h-64 object-cover rounded-lg mb-6"
+        />
         <p className="text-gray-700 mb-4 leading-relaxed">
           {harvest.description}
         </p>

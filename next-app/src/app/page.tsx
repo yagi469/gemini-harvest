@@ -9,6 +9,7 @@ interface Harvest {
   description: string;
   location: string;
   price: number;
+  imageData: string;
 }
 
 export default function Home() {
@@ -60,6 +61,19 @@ export default function Home() {
               href={`/harvests/${harvest.id}`}
               className="bg-white rounded-xl shadow-xl p-7 block hover:shadow-2xl hover:scale-102 transition-all duration-300 border border-gray-100 transform"
             >
+              <img
+                src={
+                  harvest.imageData.startsWith('http')
+                    ? harvest.imageData
+                    : harvest.imageData.startsWith('/')
+                    ? `${process.env.NEXT_PUBLIC_BASE_URL || ''}${
+                        harvest.imageData
+                      }`
+                    : `data:image/jpeg;base64,${harvest.imageData}`
+                }
+                alt={harvest.name}
+                className="w-full h-48 object-cover rounded-lg mb-4"
+              />
               <h2 className="text-2xl font-bold text-green-700 mb-3">
                 {harvest.name}
               </h2>
@@ -77,7 +91,10 @@ export default function Home() {
         </div>
       )}
       <div className="text-center mt-12">
-        <Link href="/harvests/all" className="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-md">
+        <Link
+          href="/harvests/all"
+          className="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-md"
+        >
           すべての収穫体験を見る
         </Link>
       </div>
