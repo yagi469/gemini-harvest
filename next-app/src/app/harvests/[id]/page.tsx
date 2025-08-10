@@ -13,7 +13,12 @@ interface Harvest {
 
 import Link from 'next/link';
 
-export default function HarvestDetailPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export default function HarvestDetailPage({ params }: PageProps) {
   const { id } = params;
   const [harvest, setHarvest] = useState<Harvest | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
