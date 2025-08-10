@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
@@ -9,7 +11,11 @@ interface Harvest {
   price: number;
 }
 
-export default function HarvestDetailPage({ params }: { params: { id: string } }) {
+export default function HarvestDetailPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const { id } = params;
   const [harvest, setHarvest] = useState<Harvest | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -67,14 +73,21 @@ export default function HarvestDetailPage({ params }: { params: { id: string } }
         {harvest.name}
       </h1>
       <div className="bg-white rounded-xl shadow-xl p-7 max-w-2xl mx-auto border border-gray-100">
-        <p className="text-gray-700 mb-4 leading-relaxed">{harvest.description}</p>
-        <p className="text-gray-600 text-lg mb-2">場所: <span className="font-semibold">{harvest.location}</span></p>
+        <p className="text-gray-700 mb-4 leading-relaxed">
+          {harvest.description}
+        </p>
+        <p className="text-gray-600 text-lg mb-2">
+          場所: <span className="font-semibold">{harvest.location}</span>
+        </p>
         <p className="text-green-800 font-extrabold text-2xl">
           価格: {harvest.price}円
         </p>
       </div>
       <div className="text-center mt-10">
-        <Link href="/" className="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-md">
+        <Link
+          href="/"
+          className="inline-block bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-md"
+        >
           ホームに戻る
         </Link>
       </div>
