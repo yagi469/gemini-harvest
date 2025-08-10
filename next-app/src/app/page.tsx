@@ -25,13 +25,13 @@ export default function Home() {
         }
         const data: Harvest[] = await response.json();
         setHarvests(data);
-      } catch (e: any) {
-        setError(e.message);
+      } catch (e) {
+        const message = e instanceof Error ? e.message : String(e);
+        setError(message);
       } finally {
         setLoading(false);
       }
     };
-
     fetchHarvests();
   }, []);
 
