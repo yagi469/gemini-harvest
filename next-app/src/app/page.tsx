@@ -18,7 +18,8 @@ export default function Home() {
   useEffect(() => {
     const fetchHarvests = async () => {
       try {
-        const response = await fetch('http://localhost:8081/api/harvests');
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+        const response = await fetch(`${apiUrl}/api/harvests`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
