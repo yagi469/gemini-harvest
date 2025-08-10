@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -21,8 +22,12 @@ public class HarvestController {
     private HarvestRepository harvestRepository;
 
     @GetMapping
-    public List<Harvest> getAllHarvests() {
-        return harvestRepository.findAll();
+    public List<Harvest> getAllHarvests(@RequestParam(required = false) String searchTerm) {
+        if (searchTerm != null && !searchTerm.isEmpty()) {
+            return harvestRepository.findByNameContainingIgnoreCaseOrLocationContainingIgnoreCaseOrDescriptionContainingIgnoreCase(searchTerm, searchTerm, searchTerm);
+        } else {
+            return harvestRepository.findAll();
+        }
     }
 
     @GetMapping("/{id}")
