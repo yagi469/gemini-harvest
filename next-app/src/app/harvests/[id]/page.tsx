@@ -27,9 +27,6 @@ export default function HarvestDetailPage({ params }: PageProps) {
   const [error, setError] = useState<string | null>(null);
   const [id, setId] = useState<string>('');
 
-  // Modal state
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   // Today's date (for calendar logic)
   const [today] = useState(() => {
     const d = new Date();
@@ -41,6 +38,11 @@ export default function HarvestDetailPage({ params }: PageProps) {
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+
+  // Mock available times
+  const mockAvailableTimes = ['10:00', '11:00', '14:00', '15:00', '16:00'];
+
   const [numberOfParticipants, setNumberOfParticipants] = useState(1);
   const [reservationMessage, setReservationMessage] = useState<string | null>(
     null
@@ -94,16 +96,6 @@ export default function HarvestDetailPage({ params }: PageProps) {
     }
   }, [id]);
 
-  const openModal = () => {
-    setIsModalOpen(true);
-    setReservationMessage(null);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setReservationMessage(null);
-  };
-
   const handleReservationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setReservationMessage(null);
@@ -118,26 +110,16 @@ export default function HarvestDetailPage({ params }: PageProps) {
       return;
     }
 
+    if (!selectedTime) {
+      // New validation for selectedTime
+      setReservationMessage('時間帯を選択してください。');
+      return;
+    }
+
     const reservationDateString = formatDate(selectedDate);
 
-    // Validate selected date has available slots
-    if (
-      !harvest.availableSlots ||
-      !harvest.availableSlots[reservationDateString]
-    ) {
-      setReservationMessage(
-        '選択された日付は予約できません。別の利用可能な日付を選択してください。'
-      );
-      return;
-    }
-
-    // Validate number of participants against available slots
-    if (numberOfParticipants > harvest.availableSlots[reservationDateString]) {
-      setReservationMessage(
-        `選択された人数 (${numberOfParticipants}名) は、この日の残り予約枠 (${harvest.availableSlots[reservationDateString]}名) を超えています。`
-      );
-      return;
-    }
+    // No need to validate availableSlots based on time here, as mock data is always available
+    // The mock data assumes all times are available once a date is selected.
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
@@ -151,6 +133,7 @@ export default function HarvestDetailPage({ params }: PageProps) {
           userName,
           userEmail,
           reservationDate: reservationDateString,
+          reservationTime: selectedTime, // Include selected time
           numberOfParticipants,
         }),
       });
@@ -167,11 +150,12 @@ export default function HarvestDetailPage({ params }: PageProps) {
       setUserName('');
       setUserEmail('');
       setSelectedDate(null); // Clear selected date
+      setSelectedTime(null); // Clear selected time
       setNumberOfParticipants(1);
 
       // Close modal after successful reservation
       setTimeout(() => {
-        closeModal();
+        // closeModal(); // No modal anymore
       }, 2000);
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
@@ -278,37 +262,117 @@ export default function HarvestDetailPage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* 予約ボタン */}
-            <div className="text-center">
-              <button
-                onClick={openModal}
-                className="inline-flex items-center px-10 py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105"
-              >
-                <span className="mr-2">📅</span>
-                予約する
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+            {/* New layout for Calendar and Time Selection */}
+            <div className="flex flex-col lg:flex-row gap-8 mt-8">
+              {/* Calendar Column */}
+              <div className="lg:w-1/2">
+                <label
+                  htmlFor="reservationDate"
+                  className="block text-gray-300 text-sm font-semibold mb-3"
+                >
+                  予約日
+                </label>
+                <p className="text-gray-400 text-sm mb-2">
+                  カレンダーから予約可能な日付を選択してください。
+                </p>
+                <div className="bg-gray-700/50 border border-gray-600/50 rounded-xl p-4">
+                  <Calendar
+                    onChange={(value) => {
+                      const date = Array.isArray(value) ? value[0] : value;
+                      setSelectedDate(date as Date);
+                      setSelectedTime(null); // Reset selected time slot when date changes
+                    }}
+                    value={selectedDate}
+                    locale="ja-JP"
+                    className="react-calendar-custom"
+                    tileClassName={({ date, view }) => {
+                      if (view !== 'month') {
+                        return null;
+                      }
 
-      {/* 予約モーダル */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800/95 backdrop-blur-md rounded-3xl shadow-2xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto border border-gray-600/50">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
-                予約フォーム
-              </h2>
-              <button
-                onClick={closeModal}
-                className="text-gray-400 hover:text-white text-3xl font-bold transition-colors duration-300 hover:scale-110"
-              >
-                ×
-              </button>
+                      const dateString = formatDate(date);
+
+                      // 1. Selected date
+                      if (isSameDay(date, selectedDate)) {
+                        return 'selected-date';
+                      }
+                      // 2. Today
+                      if (isSameDay(date, today)) {
+                        return 'today-date';
+                      }
+                      // 3. Past or unavailable dates
+                      if (
+                        date < today ||
+                        !harvest?.availableSlots?.[dateString]
+                      ) {
+                        return 'unavailable-date';
+                      }
+                      // 4. Future, available dates
+                      if (harvest.availableSlots[dateString] > 0) {
+                        return 'available-date';
+                      }
+
+                      return null;
+                    }}
+                    minDate={today} // Prevent selecting past dates
+                    tileDisabled={({ date, view }) => {
+                      if (view !== 'month') return false;
+                      const dateString = formatDate(date);
+                      // Disable if it's a past date or has no slots available
+                      return (
+                        date < today || !harvest?.availableSlots?.[dateString]
+                      );
+                    }}
+                  />
+                </div>
+                {selectedDate && (
+                  <p className="text-emerald-400 text-sm mt-2">
+                    選択中の予約日: {selectedDate.toLocaleDateString('ja-JP')}
+                    {harvest?.availableSlots &&
+                      harvest.availableSlots[formatDate(selectedDate)] !==
+                        undefined && (
+                        <span className="ml-2">
+                          {' '}
+                          (残り枠:{' '}
+                          {harvest.availableSlots[formatDate(selectedDate)]}名)
+                        </span>
+                      )}
+                  </p>
+                )}
+              </div>
+
+              {/* Time Selection Column (will be added in next phase) */}
+              <div className="lg:w-1/2">
+                {selectedDate && (
+                  <div>
+                    <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-4">
+                      空き時間
+                    </h3>
+                    <div className="grid grid-cols-3 gap-3">
+                      {mockAvailableTimes.map((time) => (
+                        <button
+                          key={time}
+                          type="button"
+                          onClick={() => setSelectedTime(time)}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200
+                            ${
+                              selectedTime === time
+                                ? 'bg-emerald-600 text-white'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                            }
+                          `}
+                        >
+                          {time}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <form onSubmit={handleReservationSubmit} className="space-y-6">
+            {/* Reservation Form (will be moved here) */}
+            <form onSubmit={handleReservationSubmit} className="space-y-6 mt-8">
               <div>
                 <label
                   htmlFor="userName"
@@ -343,71 +407,6 @@ export default function HarvestDetailPage({ params }: PageProps) {
                   placeholder="example@email.com"
                   required
                 />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="reservationDate"
-                  className="block text-gray-300 text-sm font-semibold mb-3"
-                >
-                  予約日
-                </label>
-                <p className="text-gray-400 text-sm mb-2">
-                  カレンダーから予約可能な日付を選択してください。
-                </p>
-                <div className="bg-gray-700/50 border border-gray-600/50 rounded-xl p-4">
-                  <Calendar
-                    onChange={(value) => {
-                      const date = Array.isArray(value) ? value[0] : value;
-                      // The type assertion is safe because we are not using selectRange
-                      setSelectedDate(date as Date);
-                    }}
-                    value={selectedDate}
-                    locale="ja-JP"
-                    className="react-calendar-custom"
-                    tileClassName={({ date, view }) => {
-                      if (view !== 'month') {
-                        return null;
-                      }
-
-                      const dateString = formatDate(date);
-
-                      // 1. Selected date
-                      if (isSameDay(date, selectedDate)) {
-                        return 'selected-date';
-                      }
-                      // 2. Today
-                      if (isSameDay(date, today)) {
-                        return 'today-date';
-                      }
-                      // 3. Past or unavailable dates
-                      if (date < today || !harvest?.availableSlots?.[dateString]) {
-                        return 'unavailable-date';
-                      }
-                      // 4. Future, available dates
-                      if (harvest.availableSlots[dateString] > 0) {
-                        return 'available-date';
-                      }
-
-                      return null;
-                    }}
-                    minDate={today} // Prevent selecting past dates
-                    tileDisabled={({ date, view }) => {
-                      if (view !== 'month') return false;
-                      const dateString = formatDate(date);
-                      // Disable if it's a past date or has no slots available
-                      return date < today || !harvest?.availableSlots?.[dateString];
-                    }}
-                  />
-                </div>
-                {selectedDate && (
-                  <p className="text-emerald-400 text-sm mt-2">
-                    選択中の予約日: {selectedDate.toLocaleDateString('ja-JP')}
-                    {harvest?.availableSlots && harvest.availableSlots[formatDate(selectedDate)] !== undefined && (
-                      <span className="ml-2"> (残り枠: {harvest.availableSlots[formatDate(selectedDate)]}名)</span>
-                    )}
-                  </p>
-                )}
               </div>
 
               {/* Calendar Legend */}
@@ -457,6 +456,232 @@ export default function HarvestDetailPage({ params }: PageProps) {
               </button>
             </form>
 
+            {/* Final Confirmation Display */}
+            {selectedDate && selectedTime && (
+              <div className="mt-6 p-4 rounded-xl text-center bg-gray-700/50 border border-gray-600/50 text-gray-300">
+                <p className="font-semibold">
+                  選択中の予約: {selectedDate.toLocaleDateString('ja-JP')}{' '}
+                  {selectedTime}
+                </p>
+              </div>
+            )}
+
+            {reservationMessage && (
+              <div
+                className={`mt-6 p-4 rounded-xl text-center ${
+                  reservationMessage.includes('失敗')
+                    ? 'bg-red-500/20 border border-red-500/30 text-red-300'
+                    : 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-300'
+                }`}
+              >
+                <p className="font-semibold">{reservationMessage}</p>
+              </div>
+            )}
+
+            {/* New layout for Calendar and Time Selection */}
+            <div className="flex flex-col lg:flex-row gap-8 mt-8">
+              {/* Calendar Column */}
+              <div className="lg:w-1/2">
+                <label
+                  htmlFor="reservationDate"
+                  className="block text-gray-300 text-sm font-semibold mb-3"
+                >
+                  予約日
+                </label>
+                <p className="text-gray-400 text-sm mb-2">
+                  カレンダーから予約可能な日付を選択してください。
+                </p>
+                <div className="bg-gray-700/50 border border-gray-600/50 rounded-xl p-4">
+                  <Calendar
+                    onChange={(value) => {
+                      const date = Array.isArray(value) ? value[0] : value;
+                      setSelectedDate(date as Date);
+                      setSelectedTime(null); // Reset selected time slot when date changes
+                    }}
+                    value={selectedDate}
+                    locale="ja-JP"
+                    className="react-calendar-custom"
+                    tileClassName={({ date, view }) => {
+                      if (view !== 'month') {
+                        return null;
+                      }
+
+                      const dateString = formatDate(date);
+
+                      // 1. Selected date
+                      if (isSameDay(date, selectedDate)) {
+                        return 'selected-date';
+                      }
+                      // 2. Today
+                      if (isSameDay(date, today)) {
+                        return 'today-date';
+                      }
+                      // 3. Past or unavailable dates
+                      if (
+                        date < today ||
+                        !harvest?.availableSlots?.[dateString]
+                      ) {
+                        return 'unavailable-date';
+                      }
+                      // 4. Future, available dates
+                      if (harvest.availableSlots[dateString] > 0) {
+                        return 'available-date';
+                      }
+
+                      return null;
+                    }}
+                    minDate={today} // Prevent selecting past dates
+                    tileDisabled={({ date, view }) => {
+                      if (view !== 'month') return false;
+                      const dateString = formatDate(date);
+                      // Disable if it's a past date or has no slots available
+                      return (
+                        date < today || !harvest?.availableSlots?.[dateString]
+                      );
+                    }}
+                  />
+                </div>
+                {selectedDate && (
+                  <p className="text-emerald-400 text-sm mt-2">
+                    選択中の予約日: {selectedDate.toLocaleDateString('ja-JP')}
+                    {harvest?.availableSlots &&
+                      harvest.availableSlots[formatDate(selectedDate)] !==
+                        undefined && (
+                        <span className="ml-2">
+                          {' '}
+                          (残り枠:{' '}
+                          {harvest.availableSlots[formatDate(selectedDate)]}名)
+                        </span>
+                      )}
+                  </p>
+                )}
+              </div>
+
+              {/* Time Selection Column (will be added in next phase) */}
+              <div className="lg:w-1/2">
+                {selectedDate && (
+                  <div>
+                    <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-4">
+                      空き時間
+                    </h3>
+                    <div className="grid grid-cols-3 gap-3">
+                      {mockAvailableTimes.map((time) => (
+                        <button
+                          key={time}
+                          type="button"
+                          onClick={() => setSelectedTime(time)}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200
+                            ${
+                              selectedTime === time
+                                ? 'bg-emerald-600 text-white'
+                                : 'bg-gray-700/50 text-gray-300 hover:bg-gray-600/50'
+                            }
+                          `}
+                        >
+                          {time}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Reservation Form (will be moved here) */}
+            <form onSubmit={handleReservationSubmit} className="space-y-6 mt-8">
+              <div>
+                <label
+                  htmlFor="userName"
+                  className="block text-gray-300 text-sm font-semibold mb-3"
+                >
+                  お名前
+                </label>
+                <input
+                  type="text"
+                  id="userName"
+                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  placeholder="山田太郎"
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="userEmail"
+                  className="block text-gray-300 text-sm font-semibold mb-3"
+                >
+                  メールアドレス
+                </label>
+                <input
+                  type="email"
+                  id="userEmail"
+                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white placeholder-gray-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
+                  value={userEmail}
+                  onChange={(e) => setUserEmail(e.target.value)}
+                  placeholder="example@email.com"
+                  required
+                />
+              </div>
+
+              {/* Calendar Legend */}
+              <div className="mt-6 p-4 bg-gray-700/50 rounded-xl border border-gray-600/50 text-sm text-gray-300">
+                <p className="font-semibold mb-2">カレンダー凡例:</p>
+                <div className="flex flex-wrap gap-4">
+                  <div className="flex items-center">
+                    <span className="w-4 h-4 rounded-sm bg-emerald-500 mr-2"></span>
+                    <span>選択中の日</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="w-4 h-4 rounded-sm border-2 border-emerald-500 mr-2"></span>
+                    <span>今日</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="w-4 h-4 rounded-sm bg-gray-700 border border-gray-600 mr-2"></span>
+                    <span>予約可能な日</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="numberOfParticipants"
+                  className="block text-gray-300 text-sm font-semibold mb-3"
+                >
+                  参加人数
+                </label>
+                <input
+                  type="number"
+                  id="numberOfParticipants"
+                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
+                  value={numberOfParticipants}
+                  onChange={(e) =>
+                    setNumberOfParticipants(parseInt(e.target.value))
+                  }
+                  min="1"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              >
+                予約を確定する
+              </button>
+            </form>
+
+            {/* Final Confirmation Display */}
+            {selectedDate && selectedTime && (
+              <div className="mt-6 p-4 rounded-xl text-center bg-gray-700/50 border border-gray-600/50 text-gray-300">
+                <p className="font-semibold">
+                  選択中の予約: {selectedDate.toLocaleDateString('ja-JP')}{' '}
+                  {selectedTime}
+                </p>
+              </div>
+            )}
+
             {reservationMessage && (
               <div
                 className={`mt-6 p-4 rounded-xl text-center ${
@@ -470,7 +695,7 @@ export default function HarvestDetailPage({ params }: PageProps) {
             )}
           </div>
         </div>
-      )}
+      </div>
 
       {/* Back Button */}
       <div className="text-center pb-16">
