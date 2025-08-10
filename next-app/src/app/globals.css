@@ -95,17 +95,24 @@ body {
   background-color: #374151; /* gray-700 */
 }
 
-.react-calendar-custom .react-calendar__tile--now {
-  background-color: transparent; /* transparent */
+.react-calendar-custom .react-calendar__tile--now,
+.react-calendar-custom .today-date {
+  background-color: transparent;
   border: 2px solid #10B981; /* emerald-500 */
   color: white;
   border-radius: 0.5rem;
 }
 
-.react-calendar-custom .react-calendar__tile--active {
-  background-color: #10B981; /* emerald-500 */
-  color: white;
+.react-calendar-custom .react-calendar__tile--active,
+.react-calendar-custom .selected-date {
+  background-color: #10B981 !important; /* emerald-500 */
+  color: white !important;
   border-radius: 0.5rem;
+}
+
+.react-calendar-custom .unavailable-date {
+  color: #6B7280; /* gray-500 */
+  text-decoration: line-through;
 }
 
 .react-calendar-custom .available-date {

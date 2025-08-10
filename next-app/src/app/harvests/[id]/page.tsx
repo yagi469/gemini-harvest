@@ -30,14 +30,39 @@ export default function HarvestDetailPage({ params }: PageProps) {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Today's date (for calendar logic)
+  const [today] = useState(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0); // Normalize to the start of the day
+    return d;
+  });
+
   // Reservation form states
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
-  const [reservationDate, setReservationDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [numberOfParticipants, setNumberOfParticipants] = useState(1);
   const [reservationMessage, setReservationMessage] = useState<string | null>(
     null
   );
+
+  // Helper function to check if two dates are the same day
+  const isSameDay = (a: Date | null, b: Date | null) => {
+    if (!a || !b) return false;
+    return (
+      a.getFullYear() === b.getFullYear() &&
+      a.getMonth() === b.getMonth() &&
+      a.getDate() === b.getDate()
+    );
+  };
+
+  // Helper function to format a Date object to 'YYYY-MM-DD' string
+  const formatDate = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   useEffect(() => {
     const resolveParams = async () => {
@@ -88,15 +113,29 @@ export default function HarvestDetailPage({ params }: PageProps) {
       return;
     }
 
+    if (!selectedDate) {
+      setReservationMessage('予約日を選択してください。');
+      return;
+    }
+
+    const reservationDateString = formatDate(selectedDate);
+
     // Validate selected date has available slots
-    if (!reservationDate || !harvest.availableSlots || harvest.availableSlots[reservationDate] === undefined || harvest.availableSlots[reservationDate] <= 0) {
-      setReservationMessage('選択された日付は予約できません。別の利用可能な日付を選択してください。');
+    if (
+      !harvest.availableSlots ||
+      !harvest.availableSlots[reservationDateString]
+    ) {
+      setReservationMessage(
+        '選択された日付は予約できません。別の利用可能な日付を選択してください。'
+      );
       return;
     }
 
     // Validate number of participants against available slots
-    if (numberOfParticipants > harvest.availableSlots[reservationDate]) {
-      setReservationMessage(`選択された人数 (${numberOfParticipants}名) は、この日の残り予約枠 (${harvest.availableSlots[reservationDate]}名) を超えています。`);
+    if (numberOfParticipants > harvest.availableSlots[reservationDateString]) {
+      setReservationMessage(
+        `選択された人数 (${numberOfParticipants}名) は、この日の残り予約枠 (${harvest.availableSlots[reservationDateString]}名) を超えています。`
+      );
       return;
     }
 
@@ -111,7 +150,7 @@ export default function HarvestDetailPage({ params }: PageProps) {
           harvestId: harvest.id,
           userName,
           userEmail,
-          reservationDate,
+          reservationDate: reservationDateString,
           numberOfParticipants,
         }),
       });
@@ -127,7 +166,7 @@ export default function HarvestDetailPage({ params }: PageProps) {
       // Clear form
       setUserName('');
       setUserEmail('');
-      setReservationDate('');
+      setSelectedDate(null); // Clear selected date
       setNumberOfParticipants(1);
 
       // Close modal after successful reservation
@@ -318,48 +357,56 @@ export default function HarvestDetailPage({ params }: PageProps) {
                 </p>
                 <div className="bg-gray-700/50 border border-gray-600/50 rounded-xl p-4">
                   <Calendar
-                                        onChange={(value) => {
-                      const selectedDate = Array.isArray(value) ? value[0] : value;
-                      if (selectedDate) {
-                        const d = selectedDate as Date;
-                        const year = d.getFullYear();
-                        const month = (d.getMonth() + 1).toString().padStart(2, '0');
-                        const day = d.getDate().toString().padStart(2, '0');
-                        setReservationDate(`${year}-${month}-${day}`);
-                      } else {
-                        setReservationDate('');
-                      }
+                    onChange={(value) => {
+                      const date = Array.isArray(value) ? value[0] : value;
+                      // The type assertion is safe because we are not using selectRange
+                      setSelectedDate(date as Date);
                     }}
-                    value={reservationDate ? new Date(reservationDate) : null}
+                    value={selectedDate}
                     locale="ja-JP"
                     className="react-calendar-custom"
-                                        tileClassName={({ date, view }) => {
-                      if (view === 'month') {
-                        const dateString = date.toISOString().split('T')[0];
-                        if (harvest?.availableSlots && harvest.availableSlots[dateString] > 0) {
-                          return 'available-date';
-                        }
+                    tileClassName={({ date, view }) => {
+                      if (view !== 'month') {
+                        return null;
                       }
+
+                      const dateString = formatDate(date);
+
+                      // 1. Selected date
+                      if (isSameDay(date, selectedDate)) {
+                        return 'selected-date';
+                      }
+                      // 2. Today
+                      if (isSameDay(date, today)) {
+                        return 'today-date';
+                      }
+                      // 3. Past or unavailable dates
+                      if (date < today || !harvest?.availableSlots?.[dateString]) {
+                        return 'unavailable-date';
+                      }
+                      // 4. Future, available dates
+                      if (harvest.availableSlots[dateString] > 0) {
+                        return 'available-date';
+                      }
+
                       return null;
                     }}
-                    minDate={new Date()} // Prevent selecting past dates
-                    tileDisabled={({ date, view }) =>
-                      view === 'month' && // Disable dates in the month view
-                      (!harvest?.availableSlots || harvest.availableSlots[date.toISOString().split('T')[0]] <= 0)
-                    }
+                    minDate={today} // Prevent selecting past dates
+                    tileDisabled={({ date, view }) => {
+                      if (view !== 'month') return false;
+                      const dateString = formatDate(date);
+                      // Disable if it's a past date or has no slots available
+                      return date < today || !harvest?.availableSlots?.[dateString];
+                    }}
                   />
                 </div>
-                {reservationDate && (
+                {selectedDate && (
                   <p className="text-emerald-400 text-sm mt-2">
-                    選択中の予約日: {new Date(reservationDate).toLocaleDateString('ja-JP')}
-                    {harvest?.availableSlots && harvest.availableSlots[reservationDate] !== undefined && (
-                      <span className="ml-2"> (残り枠: {harvest.availableSlots[reservationDate]}名)</span>
+                    選択中の予約日: {selectedDate.toLocaleDateString('ja-JP')}
+                    {harvest?.availableSlots && harvest.availableSlots[formatDate(selectedDate)] !== undefined && (
+                      <span className="ml-2"> (残り枠: {harvest.availableSlots[formatDate(selectedDate)]}名)</span>
                     )}
                   </p>
-                )}
-              </div>
-
-              <div>
                 )}
               </div>
 
