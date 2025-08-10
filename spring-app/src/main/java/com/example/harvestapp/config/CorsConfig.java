@@ -30,10 +30,12 @@ public class CorsConfig implements WebMvcConfigurer {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Vercel環境とローカル環境の両方に対応
+        // Vercel環境、Render環境、ローカル環境の両方に対応
         List<String> allowedOrigins = Arrays.asList(
                 "https://gemini-harvest.vercel.app",
                 "https://*.vercel.app",
+                "https://gemini-harvest.onrender.com",
+                "https://*.onrender.com",
                 "http://localhost:3000",
                 "http://localhost:3001");
 
@@ -41,7 +43,7 @@ public class CorsConfig implements WebMvcConfigurer {
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Access-Control-Allow-Methods",
-                "Access-Control-Allow-Headers"));
+                "Access-Control-Headers"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 
