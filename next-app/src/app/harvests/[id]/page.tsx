@@ -11,6 +11,8 @@ interface Harvest {
   price: number;
 }
 
+import Link from 'next/link';
+
 export default function HarvestDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
   const [harvest, setHarvest] = useState<Harvest | null>(null);
@@ -60,7 +62,7 @@ export default function HarvestDetailPage({ params }: { params: { id: string } }
         <p className="text-green-800 font-bold text-2xl">価格: {harvest.price}円</p>
       </div>
       <div className="text-center mt-8">
-        <a href="/" className="text-blue-500 hover:underline">Back to Home</a>
+        <Link href="/" className="text-blue-500 hover:underline">Back to Home</Link>
       </div>
     </div>
   );
