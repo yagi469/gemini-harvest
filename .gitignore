@@ -1,0 +1,13 @@
+# Spring Boot
+spring-app/target/
+spring-app/pom.xml.versionsBackup
+
+# Next.js
+next-app/.next/
+next-app/node_modules/
+next-app/package-lock.json
+next-app/.env.local
+next-app/.env.development
+
+# Node modules (general)
+node_modules/
