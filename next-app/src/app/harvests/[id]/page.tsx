@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import ReservationModal from '../../components/ReservationModal';
+import { useUser } from '@clerk/nextjs';
 
 interface Harvest {
   id: number;
@@ -23,6 +24,7 @@ interface PageProps {
 
 export default function HarvestDetailPage({ params }: PageProps) {
   const router = useRouter();
+  const { isSignedIn } = useUser();
   const [harvest, setHarvest] = useState<Harvest | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -174,6 +176,7 @@ export default function HarvestDetailPage({ params }: PageProps) {
               isOpen={isModalOpen}
               onClose={() => setIsModalOpen(false)}
               harvest={harvest}
+              isSignedIn={isSignedIn || false}
             />
           </div>
         </div>

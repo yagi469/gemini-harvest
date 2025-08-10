@@ -19,15 +19,17 @@ interface ReservationModalProps {
   isOpen: boolean;
   onClose: () => void;
   harvest: Harvest | null;
+  isSignedIn: boolean;
 }
 
-export default function ReservationModal({ isOpen, onClose, harvest }: ReservationModalProps) {
+export default function ReservationModal({ isOpen, onClose, harvest, isSignedIn }: ReservationModalProps) {
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [numberOfParticipants, setNumberOfParticipants] = useState(1);
   const [reservationMessage, setReservationMessage] = useState<string | null>(null);
+  const [showSuccessPrompt, setShowSuccessPrompt] = useState<boolean>(false);
 
   // Today's date (for calendar logic)
   const [today] = useState(() => {
@@ -56,6 +58,19 @@ export default function ReservationModal({ isOpen, onClose, harvest }: Reservati
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      // Reset form fields when modal opens
+      setUserName('');
+      setUserEmail('');
+      setSelectedDate(null);
+      setSelectedTime(null);
+      setNumberOfParticipants(1);
+      setReservationMessage(null); // Clear any previous messages
+      setShowSuccessPrompt(false); // Hide success prompt
+    }
+  }, [isOpen]);
 
   const handleReservationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,17 +118,15 @@ export default function ReservationModal({ isOpen, onClose, harvest }: Reservati
       }
 
       setReservationMessage('予約が完了しました！');
-      // Clear form
-      setUserName('');
-      setUserEmail('');
-      setSelectedDate(null);
-      setSelectedTime(null);
-      setNumberOfParticipants(1);
 
-      // Close modal after successful reservation
-      setTimeout(() => {
-        onClose();
-      }, 2000);
+      if (isSignedIn) {
+        setTimeout(() => {
+          onClose();
+        }, 5000);
+      } else {
+        setShowSuccessPrompt(true);
+      }
+
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       setReservationMessage(`予約に失敗しました: ${message}`);
@@ -332,7 +345,7 @@ export default function ReservationModal({ isOpen, onClose, harvest }: Reservati
 
             {/* Final Confirmation Display & Messages */}
             <div className="mt-6 space-y-4">
-              {selectedDate && selectedTime && (
+              {selectedDate && selectedTime && !showSuccessPrompt && (
                 <div className="p-4 rounded-xl text-center bg-gray-700/50 border border-gray-600/50 text-gray-300">
                   <p className="font-semibold">
                     選択中の予約: {selectedDate.toLocaleDateString('ja-JP')}{' '}
@@ -341,7 +354,7 @@ export default function ReservationModal({ isOpen, onClose, harvest }: Reservati
                 </div>
               )}
 
-              {reservationMessage && (
+              {reservationMessage && !showSuccessPrompt && (
                 <div
                   className={`p-4 rounded-xl text-center ${
                     reservationMessage.includes('失敗')
@@ -354,13 +367,54 @@ export default function ReservationModal({ isOpen, onClose, harvest }: Reservati
               )}
             </div>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-            >
-              予約を確定する
-            </button>
+            {reservationMessage ? (
+              <div className="text-center space-y-4">
+                <p className="text-xl font-bold text-emerald-400">
+                  {reservationMessage}
+                </p>
+                {isSignedIn ? (
+                  <button
+                    onClick={onClose}
+                    className="mt-4 px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-400 rounded-lg transition-colors duration-300"
+                  >
+                    閉じる
+                  </button>
+                ) : (
+                  <div className="text-center space-y-4">
+                    <p className="text-gray-300">
+                      予約履歴を管理するために、アカウントを作成またはログインしますか？
+                    </p>
+                    <div className="flex flex-col sm:flex-row justify-center gap-4">
+                      <a
+                        href="/sign-up"
+                        className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors duration-300"
+                      >
+                        新規登録
+                      </a>
+                      <a
+                        href="/sign-in"
+                        className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors duration-300"
+                      >
+                        ログイン
+                      </a>
+                    </div>
+                    <button
+                      onClick={onClose}
+                      className="mt-4 px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-400 rounded-lg transition-colors duration-300"
+                    >
+                      閉じる
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                type="submit"
+                className="w-full py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              >
+                予約を確定する
+              </button>
+            )}
           </form>
         </div>
       </div>
