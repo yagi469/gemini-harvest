@@ -96,33 +96,38 @@ body {
 }
 
 .react-calendar-custom .react-calendar__tile--now {
-  background-color: #10B981; /* emerald-500 */
+  background-color: transparent; /* transparent */
+  border: 2px solid #10B981; /* emerald-500 */
   color: white;
   border-radius: 0.5rem;
 }
 
 .react-calendar-custom .react-calendar__tile--active {
-  background-color: #06B6D4; /* cyan-500 */
+  background-color: #10B981; /* emerald-500 */
   color: white;
   border-radius: 0.5rem;
 }
 
 .react-calendar-custom .available-date {
-  background-color: #059669; /* emerald-600 */
-  color: white;
-  font-weight: bold;
-  border: 1px solid #047857; /* emerald-700 */
+  background-color: #374151; /* gray-700 */
+  color: #F9FAFB; /* foreground */
+  font-weight: 600; /* font-semibold */
+  border: 1px solid #4B5563; /* gray-600 */
   border-radius: 0.5rem;
 }
 
 .react-calendar-custom .available-date:enabled:hover,
 .react-calendar-custom .available-date:enabled:focus {
-  background-color: #047857; /* emerald-700 */
+  background-color: #4B5563; /* gray-600 */
 }
 
-.react-calendar-custom .react-calendar__tile--hasActive:enabled:hover,
-.react-calendar-custom .react-calendar__tile--hasActive:enabled:focus {
-  background-color: #06B6D4; /* cyan-500 */
+/* Remove diamond marker */
+.react-calendar__tile--hasActive {
+  background-color: transparent !important;
+}
+
+.react-calendar__tile--hasActive abbr[aria-label]:after {
+  display: none;
 }
 
 .react-calendar-custom .react-calendar__tile--rangeStart,

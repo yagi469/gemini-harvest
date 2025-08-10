@@ -11,3 +11,5 @@ next-app/.env.development
 
 # Node modules (general)
 node_modules/
+
+todo.md

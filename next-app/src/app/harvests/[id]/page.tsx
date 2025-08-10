@@ -318,11 +318,16 @@ export default function HarvestDetailPage({ params }: PageProps) {
                 </p>
                 <div className="bg-gray-700/50 border border-gray-600/50 rounded-xl p-4">
                   <Calendar
-                    onChange={(date) => {
-                      if (Array.isArray(date)) {
-                        setReservationDate(date[0]?.toISOString().split('T')[0] || '');
+                                        onChange={(value) => {
+                      const selectedDate = Array.isArray(value) ? value[0] : value;
+                      if (selectedDate) {
+                        const d = selectedDate as Date;
+                        const year = d.getFullYear();
+                        const month = (d.getMonth() + 1).toString().padStart(2, '0');
+                        const day = d.getDate().toString().padStart(2, '0');
+                        setReservationDate(`${year}-${month}-${day}`);
                       } else {
-                        setReservationDate(date?.toISOString().split('T')[0] || '');
+                        setReservationDate('');
                       }
                     }}
                     value={reservationDate ? new Date(reservationDate) : null}
@@ -353,6 +358,28 @@ export default function HarvestDetailPage({ params }: PageProps) {
                   </p>
                 )}
               </div>
+
+              <div>
+                )}
+              </div>
+
+              {/* Calendar Legend */}
+              <div className="mt-6 p-4 bg-gray-700/50 rounded-xl border border-gray-600/50 text-sm text-gray-300">
+                <p className="font-semibold mb-2">カレンダー凡例:</p>
+                <div className="flex flex-wrap gap-4">
+                  <div className="flex items-center">
+                    <span className="w-4 h-4 rounded-sm bg-emerald-500 mr-2"></span>
+                    <span>選択中の日</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="w-4 h-4 rounded-sm border-2 border-emerald-500 mr-2"></span>
+                    <span>今日</span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="w-4 h-4 rounded-sm bg-gray-700 border border-gray-600 mr-2"></span>
+                    <span>予約可能な日</span>
+                  </div>
+                </div>
               </div>
 
               <div>
