@@ -1,9 +1,12 @@
 package com.example.harvestapp.model;
 
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 public class Harvest {
@@ -17,15 +20,19 @@ public class Harvest {
     private double price;
     private String imageData;
 
+    @ElementCollection
+    private Set<LocalDate> availableDates;
+
     public Harvest() {
     }
 
-    public Harvest(String name, String description, String location, double price, String imageData) {
+    public Harvest(String name, String description, String location, double price, String imageData, Set<LocalDate> availableDates) {
         this.name = name;
         this.description = description;
         this.location = location;
         this.price = price;
         this.imageData = imageData;
+        this.availableDates = availableDates;
     }
 
     // Getters and Setters
@@ -75,5 +82,13 @@ public class Harvest {
 
     public void setImageData(String imageData) {
         this.imageData = imageData;
+    }
+
+    public Set<LocalDate> getAvailableDates() {
+        return availableDates;
+    }
+
+    public void setAvailableDates(Set<LocalDate> availableDates) {
+        this.availableDates = availableDates;
     }
 }

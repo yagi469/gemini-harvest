@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
 interface Harvest {
   id: number;
@@ -11,6 +13,7 @@ interface Harvest {
   location: string;
   price: number;
   imageData: string;
+  availableDates: string[];
 }
 
 interface PageProps {
@@ -298,14 +301,31 @@ export default function HarvestDetailPage({ params }: PageProps) {
                 >
                   予約日
                 </label>
-                <input
-                  type="date"
-                  id="reservationDate"
-                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/50 rounded-xl text-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
-                  value={reservationDate}
-                  onChange={(e) => setReservationDate(e.target.value)}
-                  required
-                />
+                <div className="bg-gray-700/50 border border-gray-600/50 rounded-xl p-4">
+                  <Calendar
+                    onChange={(date) => {
+                      if (Array.isArray(date)) {
+                        // Handle range selection if needed, though for this case, single date is expected
+                        setReservationDate(date[0]?.toISOString().split('T')[0] || '');
+                      } else {
+                        setReservationDate(date?.toISOString().split('T')[0] || '');
+                      }
+                    }}
+                    value={reservationDate ? new Date(reservationDate) : null}
+                    locale="ja-JP"
+                    className="react-calendar-custom"
+                    tileClassName={({ date, view }) => {
+                      if (view === 'month') {
+                        const dateString = date.toISOString().split('T')[0];
+                        if (harvest?.availableDates?.includes(dateString)) {
+                          return 'available-date';
+                        }
+                      }
+                      return null;
+                    }}
+                    minDate={new Date()} // Prevent selecting past dates
+                  />
+                </div>
               </div>
 
               <div>

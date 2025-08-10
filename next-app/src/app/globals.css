@@ -54,3 +54,85 @@ body {
   outline: 2px solid #10b981;
   outline-offset: 2px;
 }
+
+/* Custom styles for react-calendar */
+.react-calendar-custom {
+  width: 100%;
+  border: none;
+  border-radius: 0.75rem; /* rounded-xl */
+  font-family: 'Inter', sans-serif;
+  background-color: transparent; /* bg-gray-700/50 parent */
+}
+
+.react-calendar-custom .react-calendar__navigation button {
+  color: #E5E7EB; /* gray-200 */
+  font-weight: 600;
+}
+
+.react-calendar-custom .react-calendar__navigation button:enabled:hover,
+.react-calendar-custom .react-calendar__navigation button:enabled:focus {
+  background-color: #374151; /* gray-700 */
+  border-radius: 0.5rem;
+}
+
+.react-calendar-custom .react-calendar__month-view__weekdays__weekday {
+  color: #9CA3AF; /* gray-400 */
+  font-size: 0.875rem; /* text-sm */
+  text-transform: uppercase;
+}
+
+.react-calendar-custom .react-calendar__month-view__days__day {
+  color: #F9FAFB; /* foreground */
+}
+
+.react-calendar-custom .react-calendar__tile {
+  padding: 0.5em 0.5em; /* Adjust padding */
+  border-radius: 0.5rem;
+}
+
+.react-calendar-custom .react-calendar__tile:enabled:hover,
+.react-calendar-custom .react-calendar__tile:enabled:focus {
+  background-color: #374151; /* gray-700 */
+}
+
+.react-calendar-custom .react-calendar__tile--now {
+  background-color: #10B981; /* emerald-500 */
+  color: white;
+  border-radius: 0.5rem;
+}
+
+.react-calendar-custom .react-calendar__tile--active {
+  background-color: #06B6D4; /* cyan-500 */
+  color: white;
+  border-radius: 0.5rem;
+}
+
+.react-calendar-custom .available-date {
+  background-color: #059669; /* emerald-600 */
+  color: white;
+  font-weight: bold;
+  border-radius: 0.5rem;
+}
+
+.react-calendar-custom .available-date:enabled:hover,
+.react-calendar-custom .available-date:enabled:focus {
+  background-color: #047857; /* emerald-700 */
+}
+
+.react-calendar-custom .react-calendar__tile--hasActive:enabled:hover,
+.react-calendar-custom .react-calendar__tile--hasActive:enabled:focus {
+  background-color: #06B6D4; /* cyan-500 */
+}
+
+.react-calendar-custom .react-calendar__tile--rangeStart,
+.react-calendar-custom .react-calendar__tile--rangeEnd,
+.react-calendar-custom .react-calendar__tile--rangeBothEnds {
+  background-color: #06B6D4; /* cyan-500 */
+  color: white;
+}
+
+.react-calendar-custom .react-calendar__tile--range {
+  background-color: #2DD4BF; /* teal-400 */
+  color: white;
+}
+
