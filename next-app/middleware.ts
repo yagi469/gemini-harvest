@@ -1,6 +1,6 @@
-import { clerkMiddleware } from '@clerk/nextjs/server';
+import { authMiddleware } from "@clerk/nextjs";
 
-export default clerkMiddleware({
+export default authMiddleware({
   // 認証が必要なページ
   publicRoutes: [
     "/",
