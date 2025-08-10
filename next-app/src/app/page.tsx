@@ -49,15 +49,25 @@ export default function Home() {
         className="relative overflow-hidden bg-cover bg-center"
         style={{ backgroundImage: 'url("/images/background.jpg")' }}
       >
-        <div className="absolute inset-0 bg-black/40"></div> {/* Stronger overlay */}
-        <div className="relative max-w-7xl mx-auto px-6 py-24 md:py-32 text-center"> {/* Increased padding */}
-          <h1 className="text-6xl md:text-7xl font-black text-white mb-8 leading-tight drop-shadow-lg"> {/* Text color to white, add shadow */}
+        <div className="absolute inset-0 bg-black/40"></div>{' '}
+        {/* Stronger overlay */}
+        {/* 左上タイトル（スマホ対応） */}
+        <div className="absolute top-4 left-4 text-white text-xl font-bold sm:text-2xl z-10">
+          農業収穫体験
+        </div>
+        <div className="relative max-w-7xl mx-auto px-6 py-24 md:py-32 text-center">
+          {' '}
+          {/* Increased padding */}
+          <h1 className="text-6xl md:text-7xl font-black text-white mb-8 leading-tight drop-shadow-lg">
+            {' '}
+            {/* Text color to white, add shadow */}
             おすすめ収穫体験
           </h1>
-          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed mb-12 drop-shadow-md"> {/* Text color to gray-200, add shadow, increased margin-bottom */}
+          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed mb-12 drop-shadow-md">
+            {' '}
+            {/* Text color to gray-200, add shadow, increased margin-bottom */}
             全国各地の農園で、新鮮で美味しい果物や野菜を収穫する体験をお楽しみください
           </p>
-          
           {/* 認証状態に応じたCTA */}
           {isLoaded && (
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
