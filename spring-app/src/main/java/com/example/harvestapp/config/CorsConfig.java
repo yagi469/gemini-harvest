@@ -14,44 +14,45 @@ import java.util.List;
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOriginPatterns("*") // より柔軟なオリジン設定
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH")
-                .allowedHeaders("*")
-                .exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Methods",
-                        "Access-Control-Allow-Headers")
-                .allowCredentials(true)
-                .maxAge(3600);
-    }
+        @Override
+        public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                                .allowedOriginPatterns("*") // すべてのオリジンを許可
+                                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH")
+                                .allowedHeaders("*")
+                                .exposedHeaders("*")
+                                .allowCredentials(true)
+                                .maxAge(3600);
+        }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+                CorsConfiguration configuration = new CorsConfiguration();
 
-        // Vercel環境、Render環境、ローカル環境の両方に対応
-        List<String> allowedOrigins = Arrays.asList(
-                "https://gemini-harvest.vercel.app",
-                "https://*.vercel.app",
-                "https://gemini-harvest.onrender.com",
-                "https://*.onrender.com",
-                "http://localhost:3000",
-                "http://localhost:3001");
+                // すべてのオリジンを許可（ワイルドカード）
+                configuration.setAllowedOriginPatterns(Arrays.asList("*"));
 
-        configuration.setAllowedOriginPatterns(allowedOrigins);
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Access-Control-Allow-Methods",
-                "Access-Control-Headers"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+                // すべてのメソッドを許可
+                configuration.setAllowedMethods(
+                                Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
 
-        // プリフライトリクエストの処理を改善
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+                // すべてのヘッダーを許可
+                configuration.setAllowedHeaders(Arrays.asList("*"));
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+                // すべてのヘッダーを公開
+                configuration.setExposedHeaders(Arrays.asList("*"));
+
+                // 認証情報を許可
+                configuration.setAllowCredentials(true);
+
+                // プリフライトリクエストのキャッシュ時間
+                configuration.setMaxAge(3600L);
+
+                // より柔軟な設定
+                configuration.setAllowCredentials(true);
+
+                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
+        }
 }
