@@ -98,7 +98,6 @@ export default function RootLayout({
                   </SignedOut>
                 </nav>
               </div>
-            </div>
           </header>
           <main className="min-h-screen">{children}</main>
         </Providers>
