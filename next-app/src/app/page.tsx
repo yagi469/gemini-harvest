@@ -45,13 +45,16 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/20 to-cyan-900/20"></div>
-        <div className="relative max-w-7xl mx-auto px-6 py-24 text-center">
-          <h1 className="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400 mb-8 leading-tight">
+      <div
+        className="relative overflow-hidden bg-cover bg-center"
+        style={{ backgroundImage: 'url("/images/background.jpg")' }}
+      >
+        <div className="absolute inset-0 bg-black/40"></div> {/* Stronger overlay */}
+        <div className="relative max-w-7xl mx-auto px-6 py-24 md:py-32 text-center"> {/* Increased padding */}
+          <h1 className="text-6xl md:text-7xl font-black text-white mb-8 leading-tight drop-shadow-lg"> {/* Text color to white, add shadow */}
             おすすめ収穫体験
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
+          <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed mb-12 drop-shadow-md"> {/* Text color to gray-200, add shadow, increased margin-bottom */}
             全国各地の農園で、新鮮で美味しい果物や野菜を収穫する体験をお楽しみください
           </p>
           
