@@ -127,7 +127,7 @@ export default function AllHarvestsPage() {
                     <p className="text-gray-300 mb-4 leading-relaxed flex-grow min-h-14">
                       {harvest.description}
                     </p>
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center mt-auto">
                       <span className="text-2xl font-black text-emerald-400">
                         ¥{harvest.price.toLocaleString()}
                       </span>
