@@ -50,11 +50,6 @@ export default function Home() {
         style={{ backgroundImage: 'url("/images/background.jpg")' }}
       >
         <div className="absolute inset-0 bg-black/40"></div>{' '}
-        {/* Stronger overlay */}
-        {/* 左上タイトル（スマホ対応） */}
-        <div className="absolute top-4 left-4 text-white text-xl font-bold sm:text-2xl z-10">
-          農業収穫体験
-        </div>
         <div className="relative max-w-7xl mx-auto px-6 py-24 md:py-32 text-center">
           {' '}
           {/* Increased padding */}
