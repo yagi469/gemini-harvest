@@ -84,14 +84,14 @@ export default function AllHarvestsPage() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="flex flex-wrap -mx-4">
             {harvests.map((harvest) => (
               <Link
                 key={harvest.id}
                 href={`/harvests/${harvest.id}`}
-                className="group block"
+                className="group block w-full px-4 mb-8 md:w-1/2 lg:w-1/3"
               >
-                <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-gray-700/50 hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 hover:scale-105 transition-all duration-500 transform">
+                <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl overflow-hidden border border-gray-700/50 hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 hover:scale-105 transition-all duration-500 transform flex flex-col h-full">
                   {/* Image Container with Overlay */}
                   <div className="relative h-64 overflow-hidden">
                     <Image
@@ -123,8 +123,8 @@ export default function AllHarvestsPage() {
                   </div>
 
                   {/* Card Content */}
-                  <div className="p-6">
-                    <p className="text-gray-300 mb-4 leading-relaxed line-clamp-3">
+                  <div className="p-6 flex-grow">
+                    <p className="text-gray-300 mb-4 leading-relaxed flex-grow">
                       {harvest.description}
                     </p>
                     <div className="flex justify-between items-center">
