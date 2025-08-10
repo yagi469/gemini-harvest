@@ -36,12 +36,11 @@ export default function RootLayout({
       >
         <Providers>
           <header className="bg-gray-800/80 backdrop-blur-md border-b border-gray-700/50 sticky top-0 z-40">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 relative">
-              <div className="flex justify-between items-center">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
                 {/* 左上タイトル */}
                 <Link
                   href="/"
-                  className="absolute top-1/2 -translate-y-1/2 left-4 text-lg sm:text-xl font-bold text-white hover:text-gray-200 transition-all duration-300 z-50"
+                  className="text-lg sm:text-xl font-bold text-white hover:text-gray-200 transition-all duration-300"
                 >
                   農業収穫体験
                 </Link>
