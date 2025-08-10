@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Link from "next/link"; // Import Link component
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +28,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <header className="bg-green-800 text-white p-4 shadow-md">
+          <div className="container mx-auto flex justify-between items-center">
+            <Link href="/" className="text-2xl font-bold hover:text-green-200 transition-colors duration-200">
+              農業収穫体験アプリ
+            </Link>
+            {/* You can add more navigation links here if needed */}
+          </div>
+        </header>
         {children}
       </body>
     </html>
