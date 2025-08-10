@@ -31,7 +31,6 @@ export default function Home() {
         setLoading(false);
       }
     };
-
     fetchHarvests();
   }, []);
 
