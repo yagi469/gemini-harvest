@@ -1,36 +1,146 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 農業収穫体験アプリ (Next.js + Clerk)
 
-## Getting Started
+全国各地の農業収穫体験を予約できるプラットフォームです。
 
-First, run the development server:
+## 機能
+
+- 🚀 農業収穫体験の閲覧・検索
+- 🔐 Clerkによる認証・認可システム
+- 👤 ユーザープロフィール管理
+- 📅 予約履歴の確認
+- 💫 モダンなUI/UX
+
+## 技術スタック
+
+- **フロントエンド**: Next.js 15, React 19, TypeScript
+- **認証**: Clerk
+- **スタイリング**: Tailwind CSS
+- **バックエンド**: Spring Boot (別リポジトリ)
+
+## セットアップ
+
+### 1. 依存関係のインストール
+
+```bash
+npm install
+```
+
+### 2. Clerkの設定
+
+1. [Clerk](https://clerk.com/)でアカウントを作成
+2. 新しいアプリケーションを作成
+3. 環境変数を設定
+
+`.env.local`ファイルを作成し、以下の内容を追加：
+
+```env
+# Clerk認証設定
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_publishable_key_here
+CLERK_SECRET_KEY=your_secret_key_here
+
+# Clerk設定
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/
+
+# API設定
+NEXT_PUBLIC_API_URL=http://localhost:8080
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+```
+
+### 3. 開発サーバーの起動
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+アプリケーションは [http://localhost:3000](http://localhost:3000) で起動します。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 認証機能
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 保護されたページ
 
-## Learn More
+以下のページは認証が必要です：
 
-To learn more about Next.js, take a look at the following resources:
+- `/profile` - ユーザープロフィール
+- `/reservations` - 予約履歴
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 認証フロー
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **新規登録**: `/sign-up` からアカウント作成
+2. **ログイン**: `/sign-in` からログイン
+3. **プロフィール管理**: ログイン後、ヘッダーの「マイページ」からアクセス
+4. **ログアウト**: ヘッダーのユーザーメニューから実行
 
-## Deploy on Vercel
+## プロジェクト構造
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+├── app/
+│   ├── components/          # 再利用可能なコンポーネント
+│   │   └── ClerkNav.tsx    # 認証ナビゲーション
+│   ├── hooks/              # カスタムフック
+│   │   └── useAuth.ts      # 認証フック
+│   ├── profile/            # プロフィールページ
+│   ├── reservations/       # 予約履歴ページ
+│   ├── harvests/           # 収穫体験ページ
+│   ├── layout.tsx          # ルートレイアウト
+│   ├── page.tsx            # ホームページ
+│   └── providers.tsx       # Clerkプロバイダー
+├── middleware.ts            # 認証ミドルウェア
+└── globals.css             # グローバルスタイル
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 認証ミドルウェア
+
+`middleware.ts`で以下の設定を行っています：
+
+- パブリックルート: 認証不要
+- 保護されたルート: 認証が必要
+- 認証後のリダイレクト設定
+
+## カスタムフック
+
+`useAuth`フックを使用して認証状態を管理：
+
+```typescript
+import { useAuth } from '@/app/hooks/useAuth';
+
+const { isSignedIn, isLoaded, user, requireSignedIn } = useAuth();
+
+// ログイン必須ページでの使用例
+requireSignedIn('/');
+```
+
+## デプロイ
+
+### Vercel
+
+1. Vercelにプロジェクトを接続
+2. 環境変数を設定
+3. デプロイ
+
+### その他のプラットフォーム
+
+環境変数を適切に設定してからデプロイしてください。
+
+## トラブルシューティング
+
+### よくある問題
+
+1. **Clerkのキーが設定されていない**
+   - `.env.local`ファイルが正しく作成されているか確認
+   - 環境変数名が正しいか確認
+
+2. **認証が動作しない**
+   - ブラウザのコンソールでエラーを確認
+   - Clerkのダッシュボードで設定を確認
+
+3. **画像が表示されない**
+   - `next.config.ts`の画像設定を確認
+   - Clerkの画像ドメインが正しく設定されているか確認
+
+## ライセンス
+
+MIT License

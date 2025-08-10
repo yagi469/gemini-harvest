@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@clerk/nextjs';
 
 interface Harvest {
   id: number;
@@ -16,6 +17,7 @@ export default function Home() {
   const [harvests, setHarvests] = useState<Harvest[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { isSignedIn, isLoaded } = useAuth();
 
   useEffect(() => {
     const fetchHarvests = async () => {
@@ -48,9 +50,82 @@ export default function Home() {
           <h1 className="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400 mb-8 leading-tight">
             おすすめ収穫体験
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
             全国各地の農園で、新鮮で美味しい果物や野菜を収穫する体験をお楽しみください
           </p>
+          
+          {/* 認証状態に応じたCTA */}
+          {isLoaded && (
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              {isSignedIn ? (
+                <div className="space-y-4">
+                  <p className="text-lg text-emerald-300 font-medium">
+                    ようこそ！素晴らしい体験をお探しください
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Link
+                      href="/harvests/all"
+                      className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105"
+                    >
+                      体験を探す
+                      <svg
+                        className="ml-2 w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17 8l4 4m0 0l-4 4m4-4H3"
+                        />
+                      </svg>
+                    </Link>
+                    <Link
+                      href="/profile"
+                      className="inline-flex items-center px-8 py-4 bg-gray-700/50 hover:bg-gray-600/50 text-white font-bold text-lg rounded-xl border border-gray-600 transition-all duration-300 transform hover:scale-105"
+                    >
+                      マイページ
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-lg text-gray-300">
+                    アカウントを作成して、より多くの機能をお楽しみください
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Link
+                      href="/harvests/all"
+                      className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 transition-all duration-300 transform hover:scale-105"
+                    >
+                      体験を探す
+                      <svg
+                        className="ml-2 w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17 8l4 4m0 0l-4 4m4-4H3"
+                        />
+                      </svg>
+                    </Link>
+                    <Link
+                      href="/sign-up"
+                      className="inline-flex items-center px-8 py-4 bg-gray-700/50 hover:bg-gray-600/50 text-white font-bold text-lg rounded-xl border border-gray-600 transition-all duration-300 transform hover:scale-105"
+                    >
+                      新規登録
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
