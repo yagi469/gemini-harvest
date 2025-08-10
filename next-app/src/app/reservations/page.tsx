@@ -3,6 +3,7 @@
 import { useUser } from '@clerk/nextjs';
 import { redirect } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Link from 'next/link'; // Add this import
 
 interface Reservation {
   id: number;
@@ -17,7 +18,7 @@ interface Reservation {
 }
 
 export default function ReservationsPage() {
-  const { user, isLoaded, isSignedIn } = useUser();
+  const { isLoaded, isSignedIn } = useUser(); // Removed 'user'
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
 
