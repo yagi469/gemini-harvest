@@ -29,4 +29,5 @@ COPY --from=build /app/target/harvest-app-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8081
 
 # Set the entrypoint to run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# sh -c '...' を使って、複数のコマンドを順番に実行させる
+ENTRYPOINT ["sh", "-c", "echo '--- CHECKING ENVIRONMENT VARIABLES ---' && printenv | sort && echo '--- STARTING APPLICATION ---' && java -jar app.jar"]
