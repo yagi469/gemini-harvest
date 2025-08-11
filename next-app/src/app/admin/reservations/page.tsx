@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { useUser } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
+import { useUser } from '@clerk/nextjs'; 
+// import { redirect } from 'next/navigation'; // ミドルウェアが処理するため削除
 
 interface Reservation {
   id: number;
@@ -21,40 +21,27 @@ interface Reservation {
 }
 
 export default function AdminReservationsPage() {
-  const { user, isLoaded, isSignedIn } = useUser();
+  // ミドルウェアが認証とロールベースのアクセスを処理します。
+  // このページに到達した場合、ユーザーは認証されており、「admin」ロールを持っていることを意味します。
+  // ここでの冗長なチェックは不要です。
+
+  const { user } = useUser(); // ユーザー情報を表示目的で使用する場合は残す
+
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isLoaded) {
-      // Clerk is still loading, show a loading state
-      return;
-    }
-
-    if (!isSignedIn) {
-      // User is not signed in, redirect to sign-in page
-      redirect('/sign-in');
-      return;
-    }
-
-    // Check if the user has the admin role
-    if (user && user.publicMetadata.role !== 'admin') {
-      // User is signed in but not an admin, redirect to home page
-      redirect('/');
-      return;
-    }
-
-    // If user is signed in and is an admin, fetch reservations
+    // 認証と認可はミドルウェアで処理されるため、直接予約をフェッチします
     fetchAllReservations();
-  }, [isLoaded, isSignedIn, user]);
+  }, []); // マウント時に一度だけ実行
 
   const fetchAllReservations = async () => {
     setLoading(true);
     setError(null);
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-      const response = await fetch(`${apiUrl}/api/reservations`); // Fetch all reservations
+      const response = await fetch(`${apiUrl}/api/reservations`); // すべての予約をフェッチ
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -86,10 +73,6 @@ export default function AdminReservationsPage() {
     }
   };
 
-  useEffect(() => {
-    fetchAllReservations();
-  }, []);
-
   const handleStatusUpdate = async (id: number, newStatus: 'Confirmed' | 'Cancelled') => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
@@ -106,7 +89,7 @@ export default function AdminReservationsPage() {
         throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
       }
 
-      // Refresh reservations after update
+      // 更新後に予約を再フェッチ
       fetchAllReservations();
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
