@@ -31,4 +31,4 @@ EXPOSE 8081
 
 # Set the entrypoint to run the application
 # (デバッグ用のENTRYPOINTは、問題が解決したら元に戻してもOKです)
-ENTRYPOINT ["sh", "-c", "echo '--- CHECKING ENVIRONMENT VARIABLES ---' && printenv | sort && echo '--- STARTING APPLICATION ---' && java -jar app.jar"]
+ENTRYPOINT ["java", "-Dserver.port=${PORT}", "-Dspring.datasource.url=${JAKARTA_PERSISTENCE_JDBC_URL}", "-Dspring.datasource.username=${JAKARTA_PERSISTENCE_JDBC_USER}", "-Dspring.datasource.password=${JAKARTA_PERSISTENCE_JDBC_PASSWORD}", "-jar", "app.jar"]
