@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import Image from 'next/image';
+import Link from 'next/link';
+
 import { UserResource } from '@clerk/types'; // Import UserResource type
 
 interface Harvest {
@@ -394,18 +395,18 @@ export default function ReservationModal({ isOpen, onClose, harvest, isSignedIn,
                       予約履歴を管理するために、アカウントを作成またはログインしますか？
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                      <a
+                      <Link
                         href="/sign-up"
                         className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors duration-300"
                       >
                         新規登録
-                      </a>
-                      <a
+                      </Link>
+                      <Link
                         href="/sign-in"
                         className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors duration-300"
                       >
                         ログイン
-                      </a>
+                      </Link>
                     </div>
                     <button
                       onClick={onClose}
