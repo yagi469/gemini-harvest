@@ -9,6 +9,7 @@ import {
   UserButton,
   SignedIn,
   SignedOut,
+  ClerkProvider, // Add ClerkProvider import
 } from '@clerk/nextjs';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -30,13 +31,16 @@ export default function RootLayout({
 }>) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
-    <html lang="ja">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900 text-gray-100`}
-      >
-        <Providers>
-          <header className="bg-gray-800/80 backdrop-blur-md border-b border-gray-700/50 sticky top-0 z-40">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
+    <ClerkProvider>
+      {' '}
+      {/* Wrap the entire content with ClerkProvider */}
+      <html lang="ja">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900 text-gray-100`}
+        >
+          <Providers>
+            <header className="bg-gray-800/80 backdrop-blur-md border-b border-gray-700/50 sticky top-0 z-40">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
                 {/* 左上タイトル */}
                 <Link
                   href="/"
@@ -58,18 +62,34 @@ export default function RootLayout({
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     {isMenuOpen ? (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     ) : (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h16M4 18h16"
+                      />
                     )}
                   </svg>
                 </button>
 
                 {/* ナビゲーション (smブレークポイント以上で表示、sm未満ではハンバーガーメニューで制御) */}
-                <nav className={`sm:flex sm:gap-4 items-center ${isMenuOpen ? 'flex flex-col absolute top-full left-0 w-full bg-gray-800/90 border-t border-gray-700/50 py-4 space-y-4' : 'hidden'}`}>
+                <nav
+                  className={`sm:flex sm:gap-4 items-center ${
+                    isMenuOpen
+                      ? 'flex flex-col absolute top-full left-0 w-full bg-gray-800/90 border-t border-gray-700/50 py-4 space-y-4'
+                      : 'hidden'
+                  }`}
+                >
                   <Link
                     href="/harvests/all"
-                                        className="text-gray-300 hover:text-emerald-400 font-medium transition-colors duration-300 relative group"
+                    className="text-gray-300 hover:text-emerald-400 font-medium transition-colors duration-300 relative group"
                     onClick={() => setIsMenuOpen(false)} // メニューを閉じる
                   >
                     すべての体験
@@ -84,7 +104,8 @@ export default function RootLayout({
                       マイページ
                       <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-emerald-400 group-hover:w-full transition-all duration-300"></span>
                     </Link>
-                    <UserButton afterSignOutUrl="/" /> {/* afterSignOutUrlを追加 */}
+                    <UserButton afterSignOutUrl="/" />{' '}
+                    {/* afterSignOutUrlを追加 */}
                   </SignedIn>
                   <SignedOut>
                     <SignInButton mode="modal">
@@ -106,10 +127,11 @@ export default function RootLayout({
                   </SignedOut>
                 </nav>
               </div>
-          </header>
-          <main className="min-h-screen">{children}</main>
-        </Providers>
-      </body>
-    </html>
+            </header>
+            <main className="min-h-screen">{children}</main>
+          </Providers>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
