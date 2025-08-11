@@ -36,7 +36,7 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(signInUrl);
   }
 
-  const userRoles = sessionClaims?.metadata?.role || [];
+  const userRoles = (sessionClaims?.metadata as { role?: string[] })?.role || [];
   console.log('👥 Middleware: User Roles:', userRoles);
 
   const hasRole = (role: string) => {
