@@ -12,8 +12,9 @@ RUN mvn dependency:go-offline
 # Copy the rest of the application source code
 COPY src ./src
 
-# Package the application
-RUN mvn package -DskipTests
+# ★★★★★ ここを修正 ★★★★★
+# Package the application AND ensure it is an executable "fat" JAR
+RUN mvn package -DskipTests spring-boot:repackage
 
 # --- Run Stage ---
 # Use a slim JRE image for the final application
@@ -29,5 +30,5 @@ COPY --from=build /app/target/harvest-app-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8081
 
 # Set the entrypoint to run the application
-# sh -c '...' を使って、複数のコマンドを順番に実行させる
+# (デバッグ用のENTRYPOINTは、問題が解決したら元に戻してもOKです)
 ENTRYPOINT ["sh", "-c", "echo '--- CHECKING ENVIRONMENT VARIABLES ---' && printenv | sort && echo '--- STARTING APPLICATION ---' && java -jar app.jar"]
