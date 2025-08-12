@@ -1,34 +1,15 @@
-# --- Build Stage ---
-# Use an official Maven image to build the application
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+# ベースイメージとしてMavenとJDKが含まれるものを選択
+FROM maven:3.9.6-eclipse-temurin-17
 
-# Set the working directory
+# 作業ディレクトリを設定
 WORKDIR /app
 
-# Copy the POM file and download dependencies
-COPY pom.xml .
-RUN mvn dependency:go-offline
+# ソースコード全体をコピー
+COPY . .
 
-# Copy the rest of the application source code
-COPY src ./src
+# ポートを公開
+EXPOSE 10000
 
-# ★★★★★ ここを修正 ★★★★★
-# Package the application AND ensure it is an executable "fat" JAR
-RUN mvn package -DskipTests spring-boot:repackage
-
-# --- Run Stage ---
-# Use a slim JRE image for the final application
-FROM eclipse-temurin:17-jre-jammy
-
-# Set the working directory
-WORKDIR /app
-
-# Copy the built JAR from the build stage
-COPY --from=build /app/target/harvest-app-0.0.1-SNAPSHOT.jar app.jar
-
-# Expose the application port
-EXPOSE 8081
-
-# Set the entrypoint to run the application
-# (デバッグ用のENTRYPOINTは、問題が解決したら元に戻してもOKです)
-ENTRYPOINT ["java", "-Dserver.port=${PORT}", "-Dspring.datasource.url=${JAKARTA_PERSISTENCE_JDBC_URL}", "-Dspring.datasource.username=${JAKARTA_PERSISTENCE_JDBC_USER}", "-Dspring.datasource.password=${JAKARTA_PERSISTENCE_JDBC_PASSWORD}", "-jar", "app.jar"]
+# ★★★★★ これが最後の、そして究極の解決策 ★★★★★
+# ビルドと実行を、キャッシュを無視させる形で1行で強制実行する
+CMD ["sh", "-c", "mvn spring-boot:run -Dspring-boot.run.jvmArguments='-Dserver.port=${PORT} -Dspring.datasource.url=${SPRING_DATASOURCE_URL} -Dspring.datasource.username=${SPRING_DATASOURCE_USERNAME} -Dspring.datasource.password=${SPRING_DATASOURCE_PASSWORD}'"]
