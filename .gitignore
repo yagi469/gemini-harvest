@@ -14,3 +14,4 @@ next-app/.env.development
 node_modules/
 
 todo.md
+spring-app/.env.local
