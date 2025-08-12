@@ -10,6 +10,6 @@ COPY . .
 # ポートを公開
 EXPOSE 10000
 
-# ★★★★★ これが最後の、そして究極の解決策 ★★★★★
-# ビルドと実行を、キャッシュを無視させる形で1行で強制実行する
-CMD ["sh", "-c", "mvn spring-boot:run -Dspring-boot.run.jvmArguments='-Dserver.port=${PORT} -Dspring.datasource.url=${SPRING_DATASOURCE_URL} -Dspring.datasource.username=${SPRING_DATASOURCE_USERNAME} -Dspring.datasource.password=${SPRING_DATASOURCE_PASSWORD}'"]
+# ★★★★★ これが最後の、そして真の解決策 ★★★★★
+# jvmArgumentsをシングルクォートではなく、ダブルクォートで囲む
+CMD ["sh", "-c", "mvn spring-boot:run -Dspring-boot.run.jvmArguments=\"-Dserver.port=${PORT} -Dspring.datasource.url=${SPRING_DATASOURCE_URL} -Dspring.datasource.username=${SPRING_DATASOURCE_USERNAME} -Dspring.datasource.password=${SPRING_DATASOURCE_PASSWORD}\""]
