@@ -1,15 +1,26 @@
-# ベースイメージとしてMavenとJDKが含まれるものを選択
-FROM maven:3.9.6-eclipse-temurin-17
+# --- Build Stage ---
+FROM maven:3.9.6-eclipse-temurin-17 AS build
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline
+COPY src ./src
+# Fat JARを確実に生成する
+RUN mvn package -DskipTests spring-boot:repackage
 
-# 作業ディレクトリを設定
+# --- Run Stage ---
+FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
-# ソースコード全体をコピー
-COPY . .
+# ビルドステージから生成されたJARファイルだけをコピー
+COPY --from=build /app/target/harvest-app-0.0.1-SNAPSHOT.jar .
+
+# ★★★★★ 新しいアプローチ ★★★★★
+# エントリーポイント・スクリプトをコピーし、実行権限を与える
+COPY entrypoint.sh .
+RUN chmod +x entrypoint.sh
 
 # ポートを公開
 EXPOSE 10000
 
-# ★★★★★ これが最後の、そして真の解決策 ★★★★★
-# jvmArgumentsをシングルクォートではなく、ダブルクォートで囲む
-CMD ["sh", "-c", "mvn spring-boot:run -Dspring-boot.run.jvmArguments=\"-Dserver.port=${PORT} -Dspring.datasource.url=${SPRING_DATASOURCE_URL} -Dspring.datasource.username=${SPRING_DATASOURCE_USERNAME} -Dspring.datasource.password=${SPRING_DATASOURCE_PASSWORD}\""]
+# ★★★★★ コンテナ起動時に、このスクリプトを実行する ★★★★★
+ENTRYPOINT ["./entrypoint.sh"]
