@@ -22,4 +22,4 @@ exec java -Dserver.port=${PORT} \
           -Dspring.datasource.url=${SPRING_DATASOURCE_URL} \
           -Dspring.datasource.username=${SPRING_DATASOURCE_USERNAME} \
           -Dspring.datasource.password=${SPRING_DATASOURCE_PASSWORD} \
-          -jar target/harvest-app-0.0.1-SNAPSHOT.jar
+          -jar harvest-app-0.0.1-SNAPSHOT.jar
