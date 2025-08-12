@@ -1,7 +1,7 @@
 # Spring Boot
 spring-app/target/
 spring-app/pom.xml.versionsBackup
-spring-app/src/main/resources/application.properties
+
 
 # Next.js
 next-app/.next/
